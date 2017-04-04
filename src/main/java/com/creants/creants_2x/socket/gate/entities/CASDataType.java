@@ -29,7 +29,6 @@ public enum CASDataType
     UTF_STRING_ARRAY("UTF_STRING_ARRAY", 16, 16), 
     CAS_ARRAY("CAS_ARRAY", 17, 17), 
     CAS_OBJECT("CAS_OBJECT", 18, 18), 
-    CLASS("CLASS", 19, 19), 
     TEXT("TEXT", 20, 20);
     
     private int typeID;

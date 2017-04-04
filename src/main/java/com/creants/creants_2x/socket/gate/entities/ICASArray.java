@@ -8,115 +8,164 @@ import java.util.Iterator;
  *
  */
 public interface ICASArray {
-	boolean contains(Object key);
+	boolean contains(Object obj);
+
 
 	Iterator<CASDataWrapper> iterator();
 
-	Object getElementAt(int key);
 
-	CASDataWrapper get(int key);
+	Object getElementAt(int index);
 
-	void removeElementAt(int key);
+
+	CASDataWrapper get(int index);
+
+
+	void removeElementAt(int index);
+
 
 	int size();
 
+
 	byte[] toBinary();
+
 
 	String toJson();
 
+
 	String getHexDump();
+
 
 	String getDump();
 
-	String getDump(boolean key);
+
+	String getDump(boolean noFormat);
+
 
 	void addNull();
 
-	void addBool(boolean key);
 
-	void addByte(byte key);
+	void addBool(boolean value);
 
-	void addShort(short key);
 
-	void addInt(int key);
+	void addByte(byte value);
 
-	void addLong(long key);
 
-	void addFloat(float key);
+	void addShort(short value);
 
-	void addDouble(double key);
 
-	void addUtfString(String key);
+	void addInt(int value);
 
-	void addText(String key);
 
-	void addBoolArray(Collection<Boolean> key);
+	void addLong(long value);
 
-	void addByteArray(byte[] key);
 
-	void addShortArray(Collection<Short> key);
+	void addFloat(float value);
 
-	void addIntArray(Collection<Integer> key);
 
-	void addLongArray(Collection<Long> key);
+	void addDouble(double value);
 
-	void addFloatArray(Collection<Float> key);
 
-	void addDoubleArray(Collection<Double> key);
+	void addUtfString(String value);
 
-	void addUtfStringArray(Collection<String> key);
 
-	void addCASArray(ICASArray key);
+	void addText(String value);
 
-	void addCASObject(ICASObject key);
 
-	void addClass(Object key);
+	void addBoolArray(Collection<Boolean> value);
 
-	void add(CASDataWrapper key);
 
-	boolean isNull(int key);
+	void addByteArray(byte[] value);
 
-	Boolean getBool(int key);
 
-	Byte getByte(int key);
+	void addShortArray(Collection<Short> value);
 
-	Integer getUnsignedByte(int key);
 
-	Short getShort(int key);
+	void addIntArray(Collection<Integer> value);
 
-	Integer getInt(int key);
 
-	Long getLong(int key);
+	void addLongArray(Collection<Long> value);
 
-	Float getFloat(int key);
 
-	Double getDouble(int key);
+	void addFloatArray(Collection<Float> value);
 
-	String getUtfString(int key);
 
-	String getText(int key);
+	void addDoubleArray(Collection<Double> value);
 
-	Collection<Boolean> getBoolArray(int key);
 
-	byte[] getByteArray(int key);
+	void addUtfStringArray(Collection<String> value);
 
-	Collection<Integer> getUnsignedByteArray(int key);
 
-	Collection<Short> getShortArray(int key);
+	void addCASArray(ICASArray value);
 
-	Collection<Integer> getIntArray(int key);
 
-	Collection<Long> getLongArray(int key);
+	void addCASObject(ICASObject value);
 
-	Collection<Float> getFloatArray(int key);
 
-	Collection<Double> getDoubleArray(int key);
+	void add(CASDataWrapper wrappedObject);
 
-	Collection<String> getUtfStringArray(int key);
 
-	Object getClass(int key);
+	boolean isNull(int index);
 
-	ICASArray getCASArray(int key);
 
-	ICASObject getCASObject(int key);
+	Boolean getBool(int index);
+
+
+	Byte getByte(int index);
+
+
+	Integer getUnsignedByte(int index);
+
+
+	Short getShort(int index);
+
+
+	Integer getInt(int index);
+
+
+	Long getLong(int index);
+
+
+	Float getFloat(int index);
+
+
+	Double getDouble(int index);
+
+
+	String getUtfString(int index);
+
+
+	String getText(int index);
+
+
+	Collection<Boolean> getBoolArray(int index);
+
+
+	byte[] getByteArray(int index);
+
+
+	Collection<Integer> getUnsignedByteArray(int index);
+
+
+	Collection<Short> getShortArray(int index);
+
+
+	Collection<Integer> getIntArray(int index);
+
+
+	Collection<Long> getLongArray(int index);
+
+
+	Collection<Float> getFloatArray(int index);
+
+
+	Collection<Double> getDoubleArray(int index);
+
+
+	Collection<String> getUtfStringArray(int index);
+
+
+	ICASArray getCASArray(int index);
+
+
+	ICASObject getCASObject(int index);
 }

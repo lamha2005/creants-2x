@@ -15,27 +15,32 @@ import com.creants.creants_2x.socket.gate.entities.ICASObject;
  *
  */
 public interface ICASDataSerializer {
-	byte[] object2binary(final ICASObject object);
+	byte[] object2binary(ICASObject object);
 
-	byte[] array2binary(final ICASArray array);
 
-	ICASObject binary2object(final byte[] byteArray);
+	byte[] array2binary(ICASArray array);
 
-	ICASArray binary2array(final byte[] byteArray);
 
-	String object2json(final Map<String, Object> map);
+	ICASObject binary2object(byte[] byteArray);
 
-	String array2json(final List<Object> list);
 
-	ICASObject json2object(final String jsonString);
+	ICASArray binary2array(byte[] byteArray);
 
-	ICASArray json2array(final String jsonString);
 
-	ICASObject pojo2CAS(final Object pojoObject);
+	String object2json(Map<String, Object> map);
 
-	Object CAS2pojo(final ICASObject casObj);
 
-	CASObject resultSet2object(final ResultSet resultSet) throws SQLException;
+	String array2json(List<Object> list);
 
-	CASArray resultSet2array(final ResultSet resultSet) throws SQLException;
+
+	ICASObject json2object(String jsonString);
+
+
+	ICASArray json2array(String jsonString);
+
+
+	CASObject resultSet2object(ResultSet resultSet) throws SQLException;
+
+
+	CASArray resultSet2array(ResultSet resultSet) throws SQLException;
 }

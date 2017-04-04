@@ -7,9 +7,10 @@ import java.util.Arrays;
  *
  */
 public class DefaultObjectDumpFormatter {
-	public static final char TOKEN_INDENT_OPEN = '{';
-	public static final char TOKEN_INDENT_CLOSE = '}';
-	public static final char TOKEN_DIVIDER = ';';
+	public static char TOKEN_INDENT_OPEN = '{';
+	public static char TOKEN_INDENT_CLOSE = '}';
+	public static char TOKEN_DIVIDER = ';';
+
 
 	public static String prettyPrintByteArray(byte[] bytes) {
 		if (bytes == null) {
@@ -19,12 +20,13 @@ public class DefaultObjectDumpFormatter {
 		return String.format("Byte[%s]", bytes.length);
 	}
 
+
 	public static String prettyPrintDump(String rawDump) {
-		final StringBuilder buf = new StringBuilder();
+		StringBuilder buf = new StringBuilder();
 		int indentPos = 0;
 
 		for (int i = 0; i < rawDump.length(); ++i) {
-			final char ch = rawDump.charAt(i);
+			char ch = rawDump.charAt(i);
 			if (ch == '{') {
 				++indentPos;
 				buf.append("\n").append(getFormatTabs(indentPos));
@@ -47,12 +49,14 @@ public class DefaultObjectDumpFormatter {
 		return buf.toString();
 	}
 
+
 	private static String getFormatTabs(int howMany) {
 		return strFill('\t', howMany);
 	}
 
+
 	private static String strFill(char c, int howMany) {
-		final char[] chars = new char[howMany];
+		char[] chars = new char[howMany];
 		Arrays.fill(chars, c);
 		return new String(chars);
 	}
