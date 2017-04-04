@@ -62,22 +62,27 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		DefaultCASDataSerializer.BUFFER_CHUNK_SIZE = 512;
 	}
 
+
 	public static DefaultCASDataSerializer getInstance() {
 		return DefaultCASDataSerializer.instance;
 	}
 
+
 	private DefaultCASDataSerializer() {
 	}
+
 
 	public int getUnsignedByte(final byte b) {
 		return 0xFF & b;
 	}
+
 
 	@Override
 	public String array2json(final List<Object> array) {
 		// return JSONArray.fromObject((Object) array).toString();
 		return null;
 	}
+
 
 	@Override
 	public ICASArray binary2array(final byte[] data) {
@@ -88,8 +93,9 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		final ByteBuffer buffer = ByteBuffer.allocate(data.length);
 		buffer.put(data);
 		buffer.flip();
-		return this.decodeCASArray(buffer);
+		return decodeCASArray(buffer);
 	}
+
 
 	private ICASArray decodeCASArray(final ByteBuffer buffer) {
 		final ICASArray casArray = CASArray.newInstance();
@@ -104,7 +110,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 		try {
 			for (int i = 0; i < size; ++i) {
-				final CASDataWrapper decodedObject = this.decodeObject(buffer);
+				final CASDataWrapper decodedObject = decodeObject(buffer);
 				if (decodedObject == null) {
 					throw new IllegalStateException("Could not decode CASArray item at index: " + i);
 				}
@@ -116,6 +122,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return casArray;
 	}
 
+
 	@Override
 	public ICASObject binary2object(final byte[] data) {
 		if (data.length < 3) {
@@ -125,8 +132,9 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		final ByteBuffer buffer = ByteBuffer.allocate(data.length);
 		buffer.put(data);
 		buffer.flip();
-		return this.decodeCASObject(buffer);
+		return decodeCASObject(buffer);
 	}
+
 
 	private ICASObject decodeCASObject(final ByteBuffer buffer) {
 		final ICASObject casObject = CASObject.newInstance();
@@ -148,7 +156,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 				final byte[] keyData = new byte[keySize];
 				buffer.get(keyData, 0, keyData.length);
 				final String key = new String(keyData);
-				final CASDataWrapper decodedObject = this.decodeObject(buffer);
+				final CASDataWrapper decodedObject = decodeObject(buffer);
 				if (decodedObject == null) {
 					throw new IllegalStateException("Could not decode value for key: " + keyData);
 				}
@@ -160,6 +168,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return casObject;
 	}
 
+
 	@Override
 	public ICASArray json2array(String jsonStr) {
 		if (jsonStr.length() < 2) {
@@ -170,6 +179,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		// return this.decodeCASArray(jsa);
 		return null;
 	}
+
 
 	// private ICASArray decodeCASArray(final JSONArray jsa) {
 	// final ICASArray casArray = (ICASArray) CASArrayLite.newInstance();
@@ -194,6 +204,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		// return this.decodeCASObject(jso);
 		return null;
 	}
+
 
 	// private ICASObject decodeCASObject(final JSONObject jso) {
 	// final ICASObject CASObject = CASObjectLite.newInstance();
@@ -251,6 +262,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return null;
 	}
 
+
 	@Override
 	public CASObject resultSet2object(final ResultSet rset) throws SQLException {
 		final ResultSetMetaData metaData = rset.getMetaData();
@@ -298,6 +310,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return CASo;
 	}
 
+
 	private byte[] getBlobData(final String colName, final InputStream stream) {
 		final BufferedInputStream bis = new BufferedInputStream(stream);
 		byte[] bytes = null;
@@ -315,6 +328,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return bytes;
 	}
 
+
 	@Override
 	public CASArray resultSet2array(final ResultSet rset) throws SQLException {
 		final CASArray CASa = new CASArray();
@@ -324,6 +338,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return CASa;
 	}
 
+
 	@Override
 	public byte[] object2binary(final ICASObject object) {
 		final ByteBuffer buffer = ByteBuffer.allocate(DefaultCASDataSerializer.BUFFER_CHUNK_SIZE);
@@ -331,6 +346,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		buffer.putShort((short) object.size());
 		return this.obj2bin(object, buffer);
 	}
+
 
 	private byte[] obj2bin(final ICASObject object, ByteBuffer buffer) {
 		final Set<String> keys = object.getKeys();
@@ -347,6 +363,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return result;
 	}
 
+
 	@Override
 	public byte[] array2binary(final ICASArray array) {
 		final ByteBuffer buffer = ByteBuffer.allocate(DefaultCASDataSerializer.BUFFER_CHUNK_SIZE);
@@ -354,6 +371,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		buffer.putShort((short) array.size());
 		return this.arr2bin(array, buffer);
 	}
+
 
 	private byte[] arr2bin(final ICASArray array, ByteBuffer buffer) {
 		// for (final CASDataWrapper wrapper : array) {
@@ -367,11 +385,13 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return null;
 	}
 
+
 	@Override
 	public String object2json(final Map<String, Object> map) {
 		// return JSONObject.fromObject((Object) map).toString();
 		return null;
 	}
+
 
 	public void flattenObject(Map<String, Object> map, CASObject casObj) {
 		// for (Map.Entry<String, CASDataWrapper> entry : casObj) {
@@ -391,6 +411,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		// }
 	}
 
+
 	public void flattenArray(final List<Object> array, CASArray casArray) {
 		// for (CASDataWrapper value : casArray) {
 		// if (value.getTypeId() == CASDataType.CAS_OBJECT) {
@@ -406,6 +427,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		// }
 		// }
 	}
+
 
 	private CASDataWrapper decodeObject(final ByteBuffer buffer) throws CASCodecException {
 		CASDataWrapper decodedObject = null;
@@ -457,7 +479,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			final ICASObject CASObj = this.decodeCASObject(buffer);
 			CASDataType type = CASDataType.CAS_OBJECT;
 			Object finalCASObj = CASObj;
-			if (CASObj.containsKey("$C") && CASObj.containsKey("$F")) {
+			if (CASObj.containsKey(CLASS_MARKER_KEY) && CASObj.containsKey(CLASS_FIELDS_KEY)) {
 				type = CASDataType.CLASS;
 				finalCASObj = this.CAS2pojo(CASObj);
 			}
@@ -467,102 +489,106 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return decodedObject;
 	}
 
-	private ByteBuffer encodeObject(ByteBuffer buffer, final CASDataType typeId, final Object object) {
+
+	@SuppressWarnings("unchecked")
+	private ByteBuffer encodeObject(ByteBuffer buffer, CASDataType typeId, Object object) {
 		switch (typeId) {
-		case NULL: {
-			buffer = this.binEncode_NULL(buffer);
-			break;
-		}
-		case BOOL: {
-			buffer = this.binEncode_BOOL(buffer, (Boolean) object);
-			break;
-		}
-		case BYTE: {
-			buffer = this.binEncode_BYTE(buffer, (Byte) object);
-			break;
-		}
-		case SHORT: {
-			buffer = this.binEncode_SHORT(buffer, (Short) object);
-			break;
-		}
-		case INT: {
-			buffer = this.binEncode_INT(buffer, (Integer) object);
-			break;
-		}
-		case LONG: {
-			buffer = this.binEncode_LONG(buffer, (Long) object);
-			break;
-		}
-		case FLOAT: {
-			buffer = this.binEncode_FLOAT(buffer, (Float) object);
-			break;
-		}
-		case DOUBLE: {
-			buffer = this.binEncode_DOUBLE(buffer, (Double) object);
-			break;
-		}
-		case UTF_STRING: {
-			buffer = this.binEncode_UTF_STRING(buffer, (String) object);
-			break;
-		}
-		case TEXT: {
-			buffer = this.binEncode_TEXT(buffer, (String) object);
-			break;
-		}
-		case BOOL_ARRAY: {
-			buffer = this.binEncode_BOOL_ARRAY(buffer, (Collection<Boolean>) object);
-			break;
-		}
-		case BYTE_ARRAY: {
-			buffer = this.binEncode_BYTE_ARRAY(buffer, (byte[]) object);
-			break;
-		}
-		case SHORT_ARRAY: {
-			buffer = this.binEncode_SHORT_ARRAY(buffer, (Collection<Short>) object);
-			break;
-		}
-		case INT_ARRAY: {
-			buffer = this.binEncode_INT_ARRAY(buffer, (Collection<Integer>) object);
-			break;
-		}
-		case LONG_ARRAY: {
-			buffer = this.binEncode_LONG_ARRAY(buffer, (Collection<Long>) object);
-			break;
-		}
-		case FLOAT_ARRAY: {
-			buffer = this.binEncode_FLOAT_ARRAY(buffer, (Collection<Float>) object);
-			break;
-		}
-		case DOUBLE_ARRAY: {
-			buffer = this.binEncode_DOUBLE_ARRAY(buffer, (Collection<Double>) object);
-			break;
-		}
-		case UTF_STRING_ARRAY: {
-			buffer = this.binEncode_UTF_STRING_ARRAY(buffer, (Collection<String>) object);
-			break;
-		}
-		case CAS_ARRAY: {
-			buffer = this.addData(buffer, this.array2binary((ICASArray) object));
-			break;
-		}
-		case CAS_OBJECT: {
-			buffer = this.addData(buffer, this.object2binary((ICASObject) object));
-			break;
-		}
-		case CLASS: {
-			buffer = this.addData(buffer, this.object2binary(this.pojo2CAS(object)));
-			break;
-		}
-		default: {
-			throw new IllegalArgumentException("Unrecognized type in CASObject serialization: " + typeId);
-		}
+			case NULL: {
+				buffer = binEncode_NULL(buffer);
+				break;
+			}
+			case BOOL: {
+				buffer = binEncode_BOOL(buffer, (Boolean) object);
+				break;
+			}
+			case BYTE: {
+				buffer = binEncode_BYTE(buffer, (Byte) object);
+				break;
+			}
+			case SHORT: {
+				buffer = binEncode_SHORT(buffer, (Short) object);
+				break;
+			}
+			case INT: {
+				buffer = binEncode_INT(buffer, (Integer) object);
+				break;
+			}
+			case LONG: {
+				buffer = binEncode_LONG(buffer, (Long) object);
+				break;
+			}
+			case FLOAT: {
+				buffer = binEncode_FLOAT(buffer, (Float) object);
+				break;
+			}
+			case DOUBLE: {
+				buffer = binEncode_DOUBLE(buffer, (Double) object);
+				break;
+			}
+			case UTF_STRING: {
+				buffer = binEncode_UTF_STRING(buffer, (String) object);
+				break;
+			}
+			case TEXT: {
+				buffer = binEncode_TEXT(buffer, (String) object);
+				break;
+			}
+			case BOOL_ARRAY: {
+				buffer = binEncode_BOOL_ARRAY(buffer, (Collection<Boolean>) object);
+				break;
+			}
+			case BYTE_ARRAY: {
+				buffer = binEncode_BYTE_ARRAY(buffer, (byte[]) object);
+				break;
+			}
+			case SHORT_ARRAY: {
+				buffer = binEncode_SHORT_ARRAY(buffer, (Collection<Short>) object);
+				break;
+			}
+			case INT_ARRAY: {
+				buffer = binEncode_INT_ARRAY(buffer, (Collection<Integer>) object);
+				break;
+			}
+			case LONG_ARRAY: {
+				buffer = binEncode_LONG_ARRAY(buffer, (Collection<Long>) object);
+				break;
+			}
+			case FLOAT_ARRAY: {
+				buffer = binEncode_FLOAT_ARRAY(buffer, (Collection<Float>) object);
+				break;
+			}
+			case DOUBLE_ARRAY: {
+				buffer = binEncode_DOUBLE_ARRAY(buffer, (Collection<Double>) object);
+				break;
+			}
+			case UTF_STRING_ARRAY: {
+				buffer = binEncode_UTF_STRING_ARRAY(buffer, (Collection<String>) object);
+				break;
+			}
+			case CAS_ARRAY: {
+				buffer = addData(buffer, array2binary((ICASArray) object));
+				break;
+			}
+			case CAS_OBJECT: {
+				buffer = addData(buffer, object2binary((ICASObject) object));
+				break;
+			}
+			case CLASS: {
+				buffer = addData(buffer, object2binary(pojo2CAS(object)));
+				break;
+			}
+			default: {
+				throw new IllegalArgumentException("Unrecognized type in CASObject serialization: " + typeId);
+			}
 		}
 		return buffer;
 	}
 
+
 	private CASDataWrapper binDecode_NULL(final ByteBuffer buffer) {
 		return new CASDataWrapper(CASDataType.NULL, null);
 	}
+
 
 	private CASDataWrapper binDecode_BOOL(final ByteBuffer buffer) throws CASCodecException {
 		final byte boolByte = buffer.get();
@@ -578,35 +604,42 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return new CASDataWrapper(CASDataType.BOOL, bool);
 	}
 
+
 	private CASDataWrapper binDecode_BYTE(final ByteBuffer buffer) {
 		final byte boolByte = buffer.get();
 		return new CASDataWrapper(CASDataType.BYTE, boolByte);
 	}
+
 
 	private CASDataWrapper binDecode_SHORT(final ByteBuffer buffer) {
 		final short shortValue = buffer.getShort();
 		return new CASDataWrapper(CASDataType.SHORT, shortValue);
 	}
 
+
 	private CASDataWrapper binDecode_INT(final ByteBuffer buffer) {
 		final int intValue = buffer.getInt();
 		return new CASDataWrapper(CASDataType.INT, intValue);
 	}
+
 
 	private CASDataWrapper binDecode_LONG(final ByteBuffer buffer) {
 		final long longValue = buffer.getLong();
 		return new CASDataWrapper(CASDataType.LONG, longValue);
 	}
 
+
 	private CASDataWrapper binDecode_FLOAT(final ByteBuffer buffer) {
 		final float floatValue = buffer.getFloat();
 		return new CASDataWrapper(CASDataType.FLOAT, floatValue);
 	}
 
+
 	private CASDataWrapper binDecode_DOUBLE(final ByteBuffer buffer) {
 		final double doubleValue = buffer.getDouble();
 		return new CASDataWrapper(CASDataType.DOUBLE, doubleValue);
 	}
+
 
 	private CASDataWrapper binDecode_UTF_STRING(final ByteBuffer buffer) throws CASCodecException {
 		final short strLen = buffer.getShort();
@@ -619,6 +652,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return new CASDataWrapper(CASDataType.UTF_STRING, decodedString);
 	}
 
+
 	private CASDataWrapper binDecode_TEXT(final ByteBuffer buffer) throws CASCodecException {
 		final int strLen = buffer.getInt();
 		if (strLen < 0) {
@@ -629,6 +663,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		final String decodedString = new String(strData);
 		return new CASDataWrapper(CASDataType.TEXT, decodedString);
 	}
+
 
 	private CASDataWrapper binDecode_BOOL_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = this.getTypeArraySize(buffer);
@@ -647,6 +682,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return new CASDataWrapper(CASDataType.BOOL_ARRAY, array);
 	}
 
+
 	private CASDataWrapper binDecode_BYTE_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final int arraySize = buffer.getInt();
 		if (arraySize < 0) {
@@ -656,6 +692,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		buffer.get(byteData, 0, arraySize);
 		return new CASDataWrapper(CASDataType.BYTE_ARRAY, byteData);
 	}
+
 
 	private CASDataWrapper binDecode_SHORT_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = this.getTypeArraySize(buffer);
@@ -667,6 +704,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return new CASDataWrapper(CASDataType.SHORT_ARRAY, array);
 	}
 
+
 	private CASDataWrapper binDecode_INT_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = this.getTypeArraySize(buffer);
 		final List<Integer> array = new ArrayList<Integer>();
@@ -676,6 +714,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 		return new CASDataWrapper(CASDataType.INT_ARRAY, array);
 	}
+
 
 	private CASDataWrapper binDecode_LONG_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = this.getTypeArraySize(buffer);
@@ -687,6 +726,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return new CASDataWrapper(CASDataType.LONG_ARRAY, array);
 	}
 
+
 	private CASDataWrapper binDecode_FLOAT_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = this.getTypeArraySize(buffer);
 		final List<Float> array = new ArrayList<Float>();
@@ -697,6 +737,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return new CASDataWrapper(CASDataType.FLOAT_ARRAY, array);
 	}
 
+
 	private CASDataWrapper binDecode_DOUBLE_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = this.getTypeArraySize(buffer);
 		final List<Double> array = new ArrayList<Double>();
@@ -706,6 +747,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 		return new CASDataWrapper(CASDataType.DOUBLE_ARRAY, array);
 	}
+
 
 	private CASDataWrapper binDecode_UTF_STRING_ARRAY(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = this.getTypeArraySize(buffer);
@@ -723,6 +765,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return new CASDataWrapper(CASDataType.UTF_STRING_ARRAY, array);
 	}
 
+
 	private short getTypeArraySize(final ByteBuffer buffer) throws CASCodecException {
 		final short arraySize = buffer.getShort();
 		if (arraySize < 0) {
@@ -731,22 +774,26 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return arraySize;
 	}
 
+
 	private ByteBuffer binEncode_NULL(final ByteBuffer buffer) {
 		return this.addData(buffer, new byte[1]);
 	}
 
+
 	private ByteBuffer binEncode_BOOL(final ByteBuffer buffer, final Boolean value) {
 		if (value == null)
 			return null;
-		
+
 		final byte[] data = { (byte) CASDataType.BOOL.getTypeID(), (byte) (value.booleanValue() ? 1 : 0) };
 		return this.addData(buffer, data);
 	}
+
 
 	private ByteBuffer binEncode_BYTE(final ByteBuffer buffer, final Byte value) {
 		final byte[] data = { (byte) CASDataType.BYTE.getTypeID(), value };
 		return this.addData(buffer, data);
 	}
+
 
 	private ByteBuffer binEncode_SHORT(final ByteBuffer buffer, final Short value) {
 		final ByteBuffer buf = ByteBuffer.allocate(3);
@@ -755,12 +802,14 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_INT(final ByteBuffer buffer, final Integer value) {
 		final ByteBuffer buf = ByteBuffer.allocate(5);
 		buf.put((byte) CASDataType.INT.getTypeID());
 		buf.putInt(value);
 		return this.addData(buffer, buf.array());
 	}
+
 
 	private ByteBuffer binEncode_LONG(final ByteBuffer buffer, final Long value) {
 		final ByteBuffer buf = ByteBuffer.allocate(9);
@@ -769,6 +818,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_FLOAT(final ByteBuffer buffer, final Float value) {
 		final ByteBuffer buf = ByteBuffer.allocate(5);
 		buf.put((byte) CASDataType.FLOAT.getTypeID());
@@ -776,12 +826,14 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_DOUBLE(final ByteBuffer buffer, final Double value) {
 		final ByteBuffer buf = ByteBuffer.allocate(9);
 		buf.put((byte) CASDataType.DOUBLE.getTypeID());
 		buf.putDouble(value);
 		return this.addData(buffer, buf.array());
 	}
+
 
 	private ByteBuffer binEncode_UTF_STRING(final ByteBuffer buffer, final String value) {
 		final byte[] stringBytes = value.getBytes();
@@ -792,6 +844,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_TEXT(final ByteBuffer buffer, final String value) {
 		final byte[] stringBytes = value.getBytes();
 		final ByteBuffer buf = ByteBuffer.allocate(5 + stringBytes.length);
@@ -800,6 +853,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		buf.put(stringBytes);
 		return this.addData(buffer, buf.array());
 	}
+
 
 	private ByteBuffer binEncode_BOOL_ARRAY(final ByteBuffer buffer, final Collection<Boolean> value) {
 		final ByteBuffer buf = ByteBuffer.allocate(3 + value.size());
@@ -811,6 +865,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_BYTE_ARRAY(final ByteBuffer buffer, final byte[] value) {
 		final ByteBuffer buf = ByteBuffer.allocate(5 + value.length);
 		buf.put((byte) CASDataType.BYTE_ARRAY.getTypeID());
@@ -818,6 +873,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		buf.put(value);
 		return this.addData(buffer, buf.array());
 	}
+
 
 	private ByteBuffer binEncode_SHORT_ARRAY(final ByteBuffer buffer, final Collection<Short> value) {
 		final ByteBuffer buf = ByteBuffer.allocate(3 + 2 * value.size());
@@ -829,6 +885,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_INT_ARRAY(final ByteBuffer buffer, final Collection<Integer> value) {
 		final ByteBuffer buf = ByteBuffer.allocate(3 + 4 * value.size());
 		buf.put((byte) CASDataType.INT_ARRAY.getTypeID());
@@ -838,6 +895,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 		return this.addData(buffer, buf.array());
 	}
+
 
 	private ByteBuffer binEncode_LONG_ARRAY(final ByteBuffer buffer, final Collection<Long> value) {
 		final ByteBuffer buf = ByteBuffer.allocate(3 + 8 * value.size());
@@ -849,6 +907,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_FLOAT_ARRAY(final ByteBuffer buffer, final Collection<Float> value) {
 		final ByteBuffer buf = ByteBuffer.allocate(3 + 4 * value.size());
 		buf.put((byte) CASDataType.FLOAT_ARRAY.getTypeID());
@@ -859,6 +918,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer binEncode_DOUBLE_ARRAY(final ByteBuffer buffer, final Collection<Double> value) {
 		final ByteBuffer buf = ByteBuffer.allocate(3 + 8 * value.size());
 		buf.put((byte) CASDataType.DOUBLE_ARRAY.getTypeID());
@@ -868,6 +928,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 		return this.addData(buffer, buf.array());
 	}
+
 
 	private ByteBuffer binEncode_UTF_STRING_ARRAY(final ByteBuffer buffer, final Collection<String> value) {
 		int stringDataLen = 0;
@@ -890,6 +951,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer encodeCASObjectKey(final ByteBuffer buffer, final String value) {
 		final ByteBuffer buf = ByteBuffer.allocate(2 + value.length());
 		buf.putShort((short) value.length());
@@ -897,20 +959,24 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return this.addData(buffer, buf.array());
 	}
 
+
 	private ByteBuffer addData(ByteBuffer buffer, final byte[] newData) {
 		if (buffer.remaining() < newData.length) {
 			int newSize = DefaultCASDataSerializer.BUFFER_CHUNK_SIZE;
 			if (newSize < newData.length) {
 				newSize = newData.length;
 			}
+
 			final ByteBuffer newBuffer = ByteBuffer.allocate(buffer.capacity() + newSize);
 			buffer.flip();
 			newBuffer.put(buffer);
 			buffer = newBuffer;
 		}
+
 		buffer.put(newData);
 		return buffer;
 	}
+
 
 	@Override
 	public ICASObject pojo2CAS(final Object pojo) {
@@ -923,6 +989,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return CASObj;
 	}
 
+
 	private void convertPojo(final Object pojo, final ICASObject CASObj) throws Exception {
 		final Class<?> pojoClazz = pojo.getClass();
 		final String classFullName = pojoClazz.getCanonicalName();
@@ -931,8 +998,8 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 
 		final ICASArray fieldList = CASArray.newInstance();
-		CASObj.putUtfString("$C", classFullName);
-		CASObj.putCASArray("$F", fieldList);
+		CASObj.putUtfString(CLASS_MARKER_KEY, classFullName);
+		CASObj.putCASArray(CLASS_FIELDS_KEY, fieldList);
 		Field[] declaredFields;
 		for (int length = (declaredFields = pojoClazz.getDeclaredFields()).length, i = 0; i < length; ++i) {
 			final Field field = declaredFields[i];
@@ -948,8 +1015,8 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 							fieldValue = this.readValueFromGetter(fieldName, field.getType().getSimpleName(), pojo);
 						}
 						final ICASObject fieldDescriptor = CASObject.newInstance();
-						fieldDescriptor.putUtfString("N", fieldName);
-						fieldDescriptor.put("V", this.wrapPojoField(fieldValue));
+						fieldDescriptor.putUtfString(FIELD_NAME_KEY, fieldName);
+						fieldDescriptor.put(FIELD_VALUE_KEY, this.wrapPojoField(fieldValue));
 						fieldList.addCASObject(fieldDescriptor);
 					}
 				}
@@ -962,6 +1029,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 	}
 
+
 	private Object readValueFromGetter(final String fieldName, final String type, final Object pojo) throws Exception {
 		Object value = null;
 		final boolean isBool = type.equalsIgnoreCase("boolean");
@@ -972,6 +1040,8 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return value;
 	}
 
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private CASDataWrapper wrapPojoField(final Object value) {
 		if (value == null) {
 			return new CASDataWrapper(CASDataType.NULL, null);
@@ -1008,6 +1078,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return wrapper;
 	}
 
+
 	private ICASArray unrollArray(final Object[] arr) {
 		final ICASArray array = CASArray.newInstance();
 		for (final Object item : arr) {
@@ -1016,7 +1087,8 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return array;
 	}
 
-	private ICASArray unrollCollection(final Collection collection) {
+
+	private ICASArray unrollCollection(Collection<Object> collection) {
 		final ICASArray array = CASArray.newInstance();
 		for (final Object item : collection) {
 			array.add(this.wrapPojoField(item));
@@ -1024,14 +1096,15 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return array;
 	}
 
+
 	@Override
 	public Object CAS2pojo(final ICASObject CASObj) {
 		Object pojo = null;
-		if (!CASObj.containsKey("$C") && !CASObj.containsKey("$F")) {
+		if (!CASObj.containsKey(CLASS_MARKER_KEY) && !CASObj.containsKey(CLASS_FIELDS_KEY)) {
 			throw new CASRuntimeException("The CASObject passed does not represent any serialized class.");
 		}
 		try {
-			final String className = CASObj.getUtfString("$C");
+			final String className = CASObj.getUtfString(CLASS_MARKER_KEY);
 			final Class<?> theClass = Class.forName(className);
 			pojo = theClass.newInstance();
 			// if (!(pojo instanceof SerializableCASType)) {
@@ -1039,21 +1112,23 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			// pojo + ", type: " + className
 			// + " -- It doesn't implement the SerializableCASType interface");
 			// }
-			this.convertCASObject(CASObj.getCASArray("$F"), pojo);
+			this.convertCASObject(CASObj.getCASArray(CLASS_FIELDS_KEY), pojo);
 		} catch (Exception e) {
 			throw new CASRuntimeException(e);
 		}
 		return pojo;
 	}
 
+
 	private void convertCASObject(final ICASArray fieldList, final Object pojo) throws Exception {
 		for (int j = 0; j < fieldList.size(); ++j) {
 			final ICASObject fieldDescriptor = fieldList.getCASObject(j);
-			final String fieldName = fieldDescriptor.getUtfString("N");
-			final Object fieldValue = this.unwrapPojoField(fieldDescriptor.get("V"));
+			final String fieldName = fieldDescriptor.getUtfString(FIELD_NAME_KEY);
+			final Object fieldValue = this.unwrapPojoField(fieldDescriptor.get(FIELD_VALUE_KEY));
 			this.setObjectField(pojo, fieldName, fieldValue);
 		}
 	}
+
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void setObjectField(final Object pojo, final String fieldName, Object fieldValue) throws Exception {
@@ -1120,6 +1195,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 	}
 
+
 	private void writeValueFromSetter(final Field field, final Object pojo, final Object fieldValue) throws Exception {
 		final String setterName = "set" + StringUtils.capitalize(field.getName());
 		try {
@@ -1131,6 +1207,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			// + ", from class: " + pojo.getClass().getName());
 		}
 	}
+
 
 	private Object unwrapPojoField(final CASDataWrapper wrapper) {
 		Object obj = null;
@@ -1147,6 +1224,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		return obj;
 	}
 
+
 	private Object rebuildArray(final ICASArray CASArray) {
 		final Collection<Object> collection = new ArrayList<Object>();
 		final Iterator<CASDataWrapper> iter = CASArray.iterator();
@@ -1156,6 +1234,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 		return collection;
 	}
+
 
 	private Object rebuildMap(final ICASObject CASObj) {
 		final Map<String, Object> map = new HashMap<String, Object>();
