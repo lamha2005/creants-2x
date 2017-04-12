@@ -2,7 +2,7 @@ package com.creants.creants_2x.core.api;
 
 import java.util.List;
 
-import com.creants.creants_2x.socket.gate.IMessage;
+import com.creants.creants_2x.socket.gate.entities.ICASObject;
 import com.creants.creants_2x.socket.gate.wood.User;
 
 /**
@@ -18,12 +18,14 @@ public abstract interface ICoreAPI {
 	 */
 	abstract void logout(User user);
 
+
 	/**
 	 * Thực hiện login
 	 * 
 	 * @param user
 	 */
 	abstract void login(User user);
+
 
 	/**
 	 * Kích người chơi khỏi bàn
@@ -37,13 +39,18 @@ public abstract interface ICoreAPI {
 	 */
 	abstract void kickUser(User owner, User kickedUser, String paramString, int paramInt);
 
+
 	abstract void disconnectUser(User user);
+
 
 	abstract User getUserById(int userId);
 
+
 	abstract User getUserByName(String name);
 
-	abstract void sendExtensionResponse(IMessage message, List<User> recipients);
 
-	abstract void sendExtensionResponse(IMessage message, User recipient);
+	abstract void sendExtensionResponse(ICASObject message, List<User> recipients);
+
+
+	abstract void sendExtensionResponse(ICASObject message, User recipient);
 }

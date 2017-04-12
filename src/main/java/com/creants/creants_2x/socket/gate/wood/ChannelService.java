@@ -2,7 +2,6 @@ package com.creants.creants_2x.socket.gate.wood;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.creants.creants_2x.socket.gate.IChannelService;
 
@@ -21,9 +20,8 @@ public class ChannelService implements IChannelService {
 	private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private static final AttributeKey<Long> SESSION_ID = AttributeKey.valueOf("dispatcher.sessionId");
 	private static final AttributeKey<User> USER = AttributeKey.valueOf("dispatcher.user");
-	// TODO De test
-	private static final AtomicInteger nextUserId = new AtomicInteger(1);
 	private Map<Long, Channel> channelKeyMap;
+
 
 	public static ChannelService getInstance() {
 		if (instance == null) {
@@ -32,14 +30,15 @@ public class ChannelService implements IChannelService {
 		return instance;
 	}
 
+
 	private ChannelService() {
 		channelKeyMap = new ConcurrentHashMap<Long, Channel>();
 	}
 
+
 	public User connect(long sessionId, Channel channel) {
 		channel.attr(SESSION_ID).set(sessionId);
 		User user = new User();
-		user.setUserId(nextUserId.getAndIncrement());
 
 		user.setSessionId(sessionId);
 		user.setClientIp(channel.localAddress().toString().substring(1));
@@ -50,11 +49,13 @@ public class ChannelService implements IChannelService {
 		return user;
 	}
 
+
 	@Override
 	public void disconnect(long sessionId) {
 		Channel channel = getChannel(sessionId);
 		channel.disconnect();
 	}
+
 
 	/**
 	 * Set đối tượng device info cho Channel
@@ -63,9 +64,11 @@ public class ChannelService implements IChannelService {
 
 	}
 
+
 	public Channel getChannel(long session) {
 		return channelKeyMap.get(session);
 	}
+
 
 	/**
 	 * Remove by Object
@@ -76,9 +79,11 @@ public class ChannelService implements IChannelService {
 		channelKeyMap.remove(user.getSessionId());
 	}
 
+
 	public long getSessionId(Channel channel) {
 		return channel.attr(SESSION_ID).get();
 	}
+
 
 	public User getUser(Channel channel) {
 		return channel.attr(USER).get();

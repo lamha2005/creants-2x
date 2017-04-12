@@ -1,6 +1,6 @@
 package com.creants.creants_2x.core.event.handler;
 
-import com.creants.creants_2x.socket.gate.IMessage;
+import com.creants.creants_2x.socket.gate.entities.ICASObject;
 import com.creants.creants_2x.socket.gate.wood.User;
 
 /**
@@ -13,6 +13,7 @@ public interface IRequestHandler {
 	 */
 	public void initialize();
 
+
 	/**
 	 * Thực thi message request
 	 * 
@@ -21,5 +22,5 @@ public interface IRequestHandler {
 	 * @param message
 	 *            message user gửi lên server
 	 */
-	public void perform(User user, IMessage message);
+	public void perform(User user, ICASObject message);
 }

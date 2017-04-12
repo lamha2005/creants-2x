@@ -1,7 +1,7 @@
 package com.creants.creants_2x.core.util;
 
 import com.creants.creants_2x.core.event.SystemNetworkConstant;
-import com.creants.creants_2x.socket.gate.wood.Message;
+import com.creants.creants_2x.socket.gate.entities.CASObject;
 import com.creants.creants_2x.socket.gate.wood.User;
 
 /**
@@ -11,12 +11,14 @@ import com.creants.creants_2x.socket.gate.wood.User;
 public class DefaultMessageFactory {
 	private static final byte PROTOCOL_VERSION = 1;
 
-	public static Message createMessage(short commandId) {
-		Message message = new Message();
-		message.setCommandId(commandId);
-		message.setProtocolVersion(PROTOCOL_VERSION);
+
+	public static CASObject createMessage(String commandId) {
+		CASObject message = new CASObject();
+		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, commandId);
+		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;
 	}
+
 
 	/**
 	 * Tạo message lỗi.<br>
@@ -30,20 +32,21 @@ public class DefaultMessageFactory {
 	 * @param errorMessage
 	 *            thông tin lỗi
 	 */
-	public static Message createErrorMessage(short serviceId, short code, String errorMessage) {
-		Message message = new Message();
-		message.setCommandId(SystemNetworkConstant.COMMAND_ERROR);
-		message.setProtocolVersion(PROTOCOL_VERSION);
-
-		message.putShort(SystemNetworkConstant.KEYR_COMMAND_ID, serviceId);
+	public static CASObject createErrorMessage(String errorCmdId, short code, String errorMessage) {
+		CASObject message = new CASObject();
+		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_ERROR);
+		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
+		message.putUtfString(SystemNetworkConstant.KEYS_ERROR_COMMAND_ID, errorCmdId);
 		message.putShort(SystemNetworkConstant.KEYR_ERROR, code);
-		message.putString(SystemNetworkConstant.KEYS_MESSAGE, errorMessage);
+		message.putUtfString(SystemNetworkConstant.KEYS_MESSAGE, errorMessage);
 		return message;
 	}
 
-	public static Message responseMessage(short commandId) {
+
+	public static CASObject responseMessage(String commandId) {
 		return createMessage(commandId);
 	}
+
 
 	/**
 	 * Tạo message connect
@@ -51,13 +54,13 @@ public class DefaultMessageFactory {
 	 * @param sessionId
 	 * @return
 	 */
-	public static Message createConnectMessage(long sessionId) {
-		Message message = new Message();
-		message.setSessionId(sessionId);
-		message.setCommandId(SystemNetworkConstant.COMMAND_USER_CONNECT);
-		message.setProtocolVersion(PROTOCOL_VERSION);
+	public static CASObject createConnectMessage(long sessionId) {
+		CASObject message = new CASObject();
+		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_USER_CONNECT);
+		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;
 	}
+
 
 	/**
 	 * Tạo message disconnect
@@ -65,23 +68,23 @@ public class DefaultMessageFactory {
 	 * @param userId
 	 * @return
 	 */
-	public static Message createDisconnectMessage(User user) {
-		Message message = new Message();
-		message.setUser(user);
-		message.setCommandId(SystemNetworkConstant.COMMAND_USER_DISCONNECT);
-		message.setProtocolVersion(PROTOCOL_VERSION);
+	public static CASObject createDisconnectMessage(User user) {
+		CASObject message = new CASObject();
+		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_USER_CONNECT);
+		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;
 	}
+
 
 	/**
 	 * Tạo message trong game
 	 * 
 	 * @return
 	 */
-	public static Message createMessageInGame() {
-		Message message = new Message();
-		message.setCommandId(SystemNetworkConstant.COMMAND_USER_DISCONNECT);
-		message.setProtocolVersion(PROTOCOL_VERSION);
+	public static CASObject createMessageInGame() {
+		CASObject message = new CASObject();
+		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_USER_CONNECT);
+		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;
 	}
 

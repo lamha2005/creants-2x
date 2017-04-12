@@ -7,8 +7,8 @@ import com.creants.creants_2x.core.event.SystemNetworkConstant;
 import com.creants.creants_2x.core.event.handler.AbstractRequestHandler;
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.util.DefaultMessageFactory;
+import com.creants.creants_2x.socket.gate.entities.ICASObject;
 import com.creants.creants_2x.socket.gate.wood.ChannelService;
-import com.creants.creants_2x.socket.gate.wood.Message;
 import com.creants.creants_2x.socket.gate.wood.User;
 
 import io.netty.channel.Channel;
@@ -29,11 +29,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author LamHa
  */
 @Sharable
-public class MessageHandler extends SimpleChannelInboundHandler<Message> {
+public class MessageHandler extends SimpleChannelInboundHandler<ICASObject> {
 	private static final AtomicLong nextSessionId = new AtomicLong(System.currentTimeMillis());
 
 	private SystemHandlerManager systemHandlerManager;
 	private static final ChannelService channelService = ChannelService.getInstance();
+
 
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
@@ -47,6 +48,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
 
 	}
 
+
 	/*
 	 * Chú ý khi xử lý message là có nhiều thread xử lý IO, do đó cố gắng không
 	 * Block IO Thread có thể có vấn đề về performance vì phải duyệt sâu đối với
@@ -56,41 +58,25 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
 	 * một thread khác để xử lý IO sau đó giải phóng EventLoop.
 	 */
 	@Override
-	protected void channelRead0(final ChannelHandlerContext ctx, final Message message) throws Exception {
+	protected void channelRead0(final ChannelHandlerContext ctx, final ICASObject message) throws Exception {
 		Channel channel = ctx.channel();
 		User user = channelService.getUser(channel);
-		short commandId = message.getCommandId();
-		if (commandId < 50) {
-			AbstractRequestHandler handler = systemHandlerManager.getHandler(commandId);
-			if (handler != null) {
-				handler.perform(user, message);
-			} else {
-			}
+
+		String commandId = message.getUtfString("command_id");
+		AbstractRequestHandler handler = systemHandlerManager.getHandler(commandId);
+		if (handler != null) {
+			handler.perform(user, message);
 		} else {
-			// IRoom room = user.getLastJoinedRoom();
-			// if (room != null) {
-			// room.getExtension().handleClientRequest(user, message);
-			// } else {
-			// // TODO send error
-			// if (commandId == NetworkConstant.COMMAND_AUTO_JOIN_ROOM) {
-			// user.setCurrentGameId((byte) 2);
-			// IRoom lobby = GameManager.getInstance().getLobbyGame((byte) 2);
-			// lobby.getExtension().handleClientRequest(user, message);
-			// } else {
-			// CoreTracer.error(this.getClass(), "[ERROR] không thấy last
-			// room");
-			// }
-			//
-			// }
 		}
 	}
+
 
 	/**
 	 * @param receiver
 	 *            người nhận
 	 * @param message
 	 */
-	public void send(IUser receiver, final IMessage message) {
+	public void send(IUser receiver, final ICASObject message) {
 		Channel channel = channelService.getChannel(receiver.getSessionId());
 		if (channel != null) {
 			ChannelFuture future = channel.writeAndFlush(message);
@@ -98,13 +84,12 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
 			future.addListener(new ChannelFutureListener() {
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
-					if (message.getCommandId() != SystemNetworkConstant.COMMAND_PING_PONG) {
-						System.out.println("************** PING ******************");
-					}
+					String cmdId = message.getUtfString(SystemNetworkConstant.KEYS_COMMAND_ID);
 				}
 			});
 		}
 	}
+
 
 	/**
 	 * Send cho nhóm user
@@ -113,11 +98,12 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
 	 *            danh sách người nhận
 	 * @param message
 	 */
-	public void send(List<User> receivers, final IMessage message) {
+	public void send(List<User> receivers, final ICASObject message) {
 		for (IUser receiver : receivers) {
 			send(receiver, message);
 		}
 	}
+
 
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -126,20 +112,24 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
 		// ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
 	}
 
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		cause.printStackTrace();
 		ctx.close();
 	}
 
+
 	@Override
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 	}
+
 
 	public void removeUser(User user) {
 		channelService.getChannel(user.getSessionId()).close();
 		channelService.disconnect(user);
 	}
+
 
 	public void setSystemHandlerManager(SystemHandlerManager systemHandlerManager) {
 		this.systemHandlerManager = systemHandlerManager;

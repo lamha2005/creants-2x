@@ -32,15 +32,17 @@ import net.sf.json.JSONObject;
 /**
  * @author LamHM
  *         http://docs2x.smartfoxserver.com/api-docs/javadoc/server/index.html?com/smartfoxserver/v2/entities/data/class-use/SFSObject.html
+ *         http://zfull.net/software/jetbrains-webstorm-9-full-cong-cu-bien-tap-html-css-va-javascript/
+ *         http://checkman.io/blog/creating-a-javascript-library/
+ *         http://docs2x.smartfoxserver.com/api-docs/cpp-doc/class_sfs2_x_1_1_entities_1_1_data_1_1_i_s_f_s_object.html
  *
  */
 public class DefaultCASDataSerializer implements ICASDataSerializer {
 	private static DefaultCASDataSerializer instance;
-	private static int BUFFER_CHUNK_SIZE;
+	private static final int BUFFER_CHUNK_SIZE = 512;
 
 	static {
 		DefaultCASDataSerializer.instance = new DefaultCASDataSerializer();
-		DefaultCASDataSerializer.BUFFER_CHUNK_SIZE = 512;
 	}
 
 
@@ -84,6 +86,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			throw new IllegalStateException(
 					"Invalid CASDataType. Expected: " + CASDataType.CAS_ARRAY.getTypeID() + ", found: " + headerBuffer);
 		}
+
 		short size = buffer.getShort();
 		if (size < 0) {
 			throw new IllegalStateException("Can't decode CASArray. Size is negative = " + size);
@@ -354,8 +357,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		Iterator<CASDataWrapper> iter = array.iterator();
 		while (iter.hasNext()) {
 			CASDataWrapper wrapper = (CASDataWrapper) iter.next();
-			Object dataObj = wrapper.getObject();
-			buffer = encodeObject(buffer, wrapper.getTypeId(), dataObj);
+			buffer = encodeObject(buffer, wrapper.getTypeId(), wrapper.getObject());
 		}
 
 		int pos = buffer.position();

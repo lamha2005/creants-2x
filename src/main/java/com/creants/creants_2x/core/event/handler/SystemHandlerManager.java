@@ -3,7 +3,8 @@ package com.creants.creants_2x.core.event.handler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.creants.creants_2x.socket.gate.IMessage;
+import com.creants.creants_2x.socket.gate.entities.ICASObject;
+import com.creants.creants_2x.socket.gate.wood.User;
 
 /**
  * 
@@ -11,11 +12,12 @@ import com.creants.creants_2x.socket.gate.IMessage;
  *
  */
 public class SystemHandlerManager {
-	private Map<Short, AbstractRequestHandler> systemHandler;
+	private Map<String, AbstractRequestHandler> systemHandler;
+
 
 	// TODO review EventManager SFS
 	public SystemHandlerManager() {
-		systemHandler = new ConcurrentHashMap<Short, AbstractRequestHandler>();
+		systemHandler = new ConcurrentHashMap<String, AbstractRequestHandler>();
 		// systemHandler.put(SystemNetworkConstant.COMMAND_PING_PONG, new
 		// PingPongRequestHandler());
 		// systemHandler.put(SystemNetworkConstant.COMMAND_USER_CONNECT, new
@@ -36,13 +38,14 @@ public class SystemHandlerManager {
 		// LeaveRoomRequestHandler());
 	}
 
-	public AbstractRequestHandler getHandler(Short commandId) {
+
+	public AbstractRequestHandler getHandler(String commandId) {
 		return systemHandler.get(commandId);
 	}
 
-	public void dispatchEvent(IMessage message) {
-		// TODO validate
-		AbstractRequestHandler requestHandler = systemHandler.get(message.getCommandId());
-		requestHandler.perform(message.getUser(), message);
+
+	public void dispatchEvent(User user, ICASObject message) {
+		AbstractRequestHandler requestHandler = systemHandler.get(message.getUtfString("command_id"));
+		requestHandler.perform(user, message);
 	}
 }

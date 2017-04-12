@@ -11,24 +11,27 @@ public class SystemNetworkConstant {
 	public static final byte PROTOCOL_VERSION = 1;
 
 	/************************ SERVICE ID *********************/
-	public static final short COMMAND_ERROR = 0x00;
-	public static final short COMMAND_USER_CONNECT = 0x01;
-	public static final short COMMAND_USER_DISCONNECT = 0x02;
-	public static final short COMMAND_USER_SEND_INFO = 0x03;
-	public static final short COMMAND_USER_JOIN_GAME = 0x04;
-	public static final short COMMAND_USER_LOGIN = 0x05;
-	public static final short COMMAND_USER_LOGOUT = 0x06;
-	public static final short COMMAND_GET_GAME_LIST = 0x07;
-	public static final short COMMAND_USER_JOIN_ROOM = 0x08;
-	public static final short COMMAND_USER_LEAVE_ROOM = 0x09;
-	public static final short COMMAND_USER_CREATE_ROOM = 0x0A;
+	public static final String COMMAND_ERROR = "cas_cmd_error";
+	public static final String COMMAND_USER_CONNECT = "cas_cmd_user_connect";
+	public static final String COMMAND_USER_DISCONNECT = "cas_cmd_user_disconnect";
+	public static final String COMMAND_USER_JOIN_GAME = "cas_cmd_user_join_game";
+	public static final String COMMAND_USER_LOGIN = "cas_cmd_user_login";
+	public static final String COMMAND_USER_LOGOUT = "cas_cmd_user_logout";
+	public static final String COMMAND_GET_GAME_LIST = "cas_cmd_get_game_list";
+	public static final String COMMAND_USER_JOIN_ROOM = "cas_cmd_user_join_room";
+	public static final String COMMAND_USER_LEAVE_ROOM = "cas_cmd_user_leave_room";
+	public static final String COMMAND_USER_CREATE_ROOM = "cas_cmd_user_create_room";
 
-	public static final short COMMAND_PING_PONG = 0x10;
-	public static final short COMMAND_MONEY_CHANGE = 0x11;
-	public static final short COMMAND_UNKNOW = 0xFF;
+	public static final String COMMAND_PING_PONG = "cas_cmd_ping_pong";
+	public static final String COMMAND_MONEY_CHANGE = "cas_cmd_money_change";
+	public static final String COMMAND_UNKNOW = "cas_cmd_unknow";
 
 	/************************ KEY ****************************/
-	public static final short KEYR_ERROR = 0x00;
+	public static final String KEYR_ERROR = "cas_error_code";
+	public static final String KEYS_COMMAND_ID = "cas_command_id";
+	public static final String KEYS_ERROR_COMMAND_ID = "cas_error_command_id";
+	public static final String KEYB_PROTOCOL_VERSION = "cas_protocol_version";
+	public static final String KEYS_MESSAGE = "cas_message";
 
 	public static final short KEYS_USERNAME = 0x01;
 	public static final short KEYS_PASSWORD = 0x02;
@@ -48,7 +51,6 @@ public class SystemNetworkConstant {
 	public static final short KEYR_SCREEN_WIDTH = 0x11;
 	public static final short KEYR_SCREEN_HEIGHT = 0x12;
 	public static final short KEYBL_IS_FIRST_LOGIN = 0x13;
-	public static final short KEYS_MESSAGE = 0x14;
 	public static final short KEYS_JSON_DATA = 0x15;
 	public static final short KEYB_STATUS = 0x16;
 	public static final short KEYI_USER_ID = 0x17;
