@@ -8,23 +8,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author LamHM
  *
  */
-public class CASObjectLite {
-	private Map<String, CASDataWrapper> dataHolder;
+public class QAntObjectLite {
+	private Map<String, QAntDataWrapper> dataHolder;
 
 
-	public CASObjectLite() {
-		dataHolder = new ConcurrentHashMap<String, CASDataWrapper>();
+	public QAntObjectLite() {
+		dataHolder = new ConcurrentHashMap<String, QAntDataWrapper>();
 	}
 
 
-	public static CASObjectLite newInstance() {
-		return new CASObjectLite();
+	public static QAntObjectLite newInstance() {
+		return new QAntObjectLite();
 	}
 
 
 	@SuppressWarnings("unchecked")
 	public Collection<Boolean> getBoolArray(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -33,7 +33,7 @@ public class CASObjectLite {
 
 
 	public Byte getByte(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -43,7 +43,7 @@ public class CASObjectLite {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Double> getDoubleArray(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -52,7 +52,7 @@ public class CASObjectLite {
 
 
 	public Float getFloat(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -62,7 +62,7 @@ public class CASObjectLite {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Float> getFloatArray(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -72,7 +72,7 @@ public class CASObjectLite {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Integer> getIntArray(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -81,7 +81,7 @@ public class CASObjectLite {
 
 
 	public Long getLong(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -90,7 +90,7 @@ public class CASObjectLite {
 
 
 	public Short getShort(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -100,7 +100,7 @@ public class CASObjectLite {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Short> getShortArray(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -110,7 +110,7 @@ public class CASObjectLite {
 
 	@SuppressWarnings("unchecked")
 	public Collection<String> getUtfStringArray(String key) {
-		CASDataWrapper o = dataHolder.get(key);
+		QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}

@@ -7,9 +7,9 @@ import com.creants.creants_2x.core.event.SystemNetworkConstant;
 import com.creants.creants_2x.core.event.handler.AbstractRequestHandler;
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.util.DefaultMessageFactory;
-import com.creants.creants_2x.socket.gate.entities.ICASObject;
+import com.creants.creants_2x.socket.gate.entities.IQAntObject;
 import com.creants.creants_2x.socket.gate.wood.ChannelService;
-import com.creants.creants_2x.socket.gate.wood.User;
+import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -29,7 +29,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author LamHa
  */
 @Sharable
-public class MessageHandler extends SimpleChannelInboundHandler<ICASObject> {
+public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 	private static final AtomicLong nextSessionId = new AtomicLong(System.currentTimeMillis());
 
 	private SystemHandlerManager systemHandlerManager;
@@ -42,7 +42,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<ICASObject> {
 
 		synchronized (nextSessionId) {
 			long sessionId = nextSessionId.getAndIncrement();
-			User user = channelService.connect(sessionId, channel);
+			QAntUser user = channelService.connect(sessionId, channel);
 			send(user, DefaultMessageFactory.createConnectMessage(sessionId));
 		}
 
@@ -58,11 +58,11 @@ public class MessageHandler extends SimpleChannelInboundHandler<ICASObject> {
 	 * một thread khác để xử lý IO sau đó giải phóng EventLoop.
 	 */
 	@Override
-	protected void channelRead0(final ChannelHandlerContext ctx, final ICASObject message) throws Exception {
+	protected void channelRead0(final ChannelHandlerContext ctx, final IQAntObject message) throws Exception {
 		Channel channel = ctx.channel();
-		User user = channelService.getUser(channel);
+		QAntUser user = channelService.getUser(channel);
 
-		String commandId = message.getUtfString("command_id");
+		String commandId = message.getUtfString(SystemNetworkConstant.KEYS_COMMAND_ID);
 		AbstractRequestHandler handler = systemHandlerManager.getHandler(commandId);
 		if (handler != null) {
 			handler.perform(user, message);
@@ -76,7 +76,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<ICASObject> {
 	 *            người nhận
 	 * @param message
 	 */
-	public void send(IUser receiver, final ICASObject message) {
+	public void send(IQAntUser receiver, final IQAntObject message) {
 		Channel channel = channelService.getChannel(receiver.getSessionId());
 		if (channel != null) {
 			ChannelFuture future = channel.writeAndFlush(message);
@@ -98,8 +98,8 @@ public class MessageHandler extends SimpleChannelInboundHandler<ICASObject> {
 	 *            danh sách người nhận
 	 * @param message
 	 */
-	public void send(List<User> receivers, final ICASObject message) {
-		for (IUser receiver : receivers) {
+	public void send(List<QAntUser> receivers, final IQAntObject message) {
+		for (IQAntUser receiver : receivers) {
 			send(receiver, message);
 		}
 	}
@@ -125,7 +125,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<ICASObject> {
 	}
 
 
-	public void removeUser(User user) {
+	public void removeUser(QAntUser user) {
 		channelService.getChannel(user.getSessionId()).close();
 		channelService.disconnect(user);
 	}

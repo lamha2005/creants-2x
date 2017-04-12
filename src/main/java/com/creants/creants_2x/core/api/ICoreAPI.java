@@ -2,8 +2,8 @@ package com.creants.creants_2x.core.api;
 
 import java.util.List;
 
-import com.creants.creants_2x.socket.gate.entities.ICASObject;
-import com.creants.creants_2x.socket.gate.wood.User;
+import com.creants.creants_2x.socket.gate.entities.IQAntObject;
+import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
 /**
  * @author LamHa
@@ -16,7 +16,7 @@ public abstract interface ICoreAPI {
 	 * 
 	 * @param user
 	 */
-	abstract void logout(User user);
+	abstract void logout(QAntUser user);
 
 
 	/**
@@ -24,7 +24,7 @@ public abstract interface ICoreAPI {
 	 * 
 	 * @param user
 	 */
-	abstract void login(User user);
+	abstract void login(QAntUser user);
 
 
 	/**
@@ -37,20 +37,20 @@ public abstract interface ICoreAPI {
 	 * @param paramString
 	 * @param paramInt
 	 */
-	abstract void kickUser(User owner, User kickedUser, String paramString, int paramInt);
+	abstract void kickUser(QAntUser owner, QAntUser kickedUser, String paramString, int paramInt);
 
 
-	abstract void disconnectUser(User user);
+	abstract void disconnectUser(QAntUser user);
 
 
-	abstract User getUserById(int userId);
+	abstract QAntUser getUserById(int userId);
 
 
-	abstract User getUserByName(String name);
+	abstract QAntUser getUserByName(String name);
 
 
-	abstract void sendExtensionResponse(ICASObject message, List<User> recipients);
+	abstract void sendExtensionResponse(IQAntObject message, List<QAntUser> recipients);
 
 
-	abstract void sendExtensionResponse(ICASObject message, User recipient);
+	abstract void sendExtensionResponse(IQAntObject message, QAntUser recipient);
 }

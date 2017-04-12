@@ -7,17 +7,17 @@ import java.util.Iterator;
  * @author Lamhm
  *
  */
-public interface ICASArray {
+public interface IQAntArray {
 	boolean contains(Object obj);
 
 
-	Iterator<CASDataWrapper> iterator();
+	Iterator<QAntDataWrapper> iterator();
 
 
 	Object getElementAt(int index);
 
 
-	CASDataWrapper get(int index);
+	QAntDataWrapper get(int index);
 
 
 	void removeElementAt(int index);
@@ -95,13 +95,13 @@ public interface ICASArray {
 	void addUtfStringArray(Collection<String> value);
 
 
-	void addCASArray(ICASArray value);
+	void addCASArray(IQAntArray value);
 
 
-	void addCASObject(ICASObject value);
+	void addCASObject(IQAntObject value);
 
 
-	void add(CASDataWrapper wrappedObject);
+	void add(QAntDataWrapper wrappedObject);
 
 
 	boolean isNull(int index);
@@ -164,8 +164,8 @@ public interface ICASArray {
 	Collection<String> getUtfStringArray(int index);
 
 
-	ICASArray getCASArray(int index);
+	IQAntArray getCASArray(int index);
 
 
-	ICASObject getCASObject(int index);
+	IQAntObject getCASObject(int index);
 }

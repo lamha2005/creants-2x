@@ -19,7 +19,7 @@ public class ChannelService implements IChannelService {
 	private static ChannelService instance;
 	private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private static final AttributeKey<Long> SESSION_ID = AttributeKey.valueOf("dispatcher.sessionId");
-	private static final AttributeKey<User> USER = AttributeKey.valueOf("dispatcher.user");
+	private static final AttributeKey<QAntUser> USER = AttributeKey.valueOf("dispatcher.user");
 	private Map<Long, Channel> channelKeyMap;
 
 
@@ -36,9 +36,9 @@ public class ChannelService implements IChannelService {
 	}
 
 
-	public User connect(long sessionId, Channel channel) {
+	public QAntUser connect(long sessionId, Channel channel) {
 		channel.attr(SESSION_ID).set(sessionId);
-		User user = new User();
+		QAntUser user = new QAntUser();
 
 		user.setSessionId(sessionId);
 		user.setClientIp(channel.localAddress().toString().substring(1));
@@ -75,7 +75,7 @@ public class ChannelService implements IChannelService {
 	 * 
 	 * @param channel
 	 */
-	public void disconnect(User user) {
+	public void disconnect(QAntUser user) {
 		channelKeyMap.remove(user.getSessionId());
 	}
 
@@ -85,7 +85,7 @@ public class ChannelService implements IChannelService {
 	}
 
 
-	public User getUser(Channel channel) {
+	public QAntUser getUser(Channel channel) {
 		return channel.attr(USER).get();
 	}
 

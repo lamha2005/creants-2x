@@ -2,8 +2,8 @@ package com.creants.creants_2x.core.api;
 
 import java.util.List;
 
-import com.creants.creants_2x.socket.gate.entities.ICASObject;
-import com.creants.creants_2x.socket.gate.wood.User;
+import com.creants.creants_2x.socket.gate.entities.IQAntObject;
+import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
 /**
  * @author LamHa
@@ -12,7 +12,7 @@ import com.creants.creants_2x.socket.gate.wood.User;
 public class CoreAPI implements ICoreAPI {
 
 	@Override
-	public void logout(User user) {
+	public void logout(QAntUser user) {
 	}
 
 
@@ -21,44 +21,44 @@ public class CoreAPI implements ICoreAPI {
 
 
 	@Override
-	public void login(User user) {
+	public void login(QAntUser user) {
 	}
 
 
 	@Override
-	public void kickUser(User Owner, User kickedUser, String paramString, int paramInt) {
+	public void kickUser(QAntUser Owner, QAntUser kickedUser, String paramString, int paramInt) {
 
 	}
 
 
 	@Override
-	public void disconnectUser(User user) {
+	public void disconnectUser(QAntUser user) {
 	}
 
 
 	@Override
-	public User getUserById(int userId) {
+	public QAntUser getUserById(int userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public User getUserByName(String name) {
+	public QAntUser getUserByName(String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public void sendExtensionResponse(ICASObject message, List<User> recipients) {
+	public void sendExtensionResponse(IQAntObject message, List<QAntUser> recipients) {
 		// TODO Auto-generated method stub
 
 	}
 
 
 	@Override
-	public void sendExtensionResponse(ICASObject message, User recipient) {
+	public void sendExtensionResponse(IQAntObject message, QAntUser recipient) {
 		// TODO Auto-generated method stub
 
 	}

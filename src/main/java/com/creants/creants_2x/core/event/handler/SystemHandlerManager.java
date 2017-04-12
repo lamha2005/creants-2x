@@ -3,8 +3,8 @@ package com.creants.creants_2x.core.event.handler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.creants.creants_2x.socket.gate.entities.ICASObject;
-import com.creants.creants_2x.socket.gate.wood.User;
+import com.creants.creants_2x.socket.gate.entities.IQAntObject;
+import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
 /**
  * 
@@ -44,7 +44,7 @@ public class SystemHandlerManager {
 	}
 
 
-	public void dispatchEvent(User user, ICASObject message) {
+	public void dispatchEvent(QAntUser user, IQAntObject message) {
 		AbstractRequestHandler requestHandler = systemHandler.get(message.getUtfString("command_id"));
 		requestHandler.perform(user, message);
 	}

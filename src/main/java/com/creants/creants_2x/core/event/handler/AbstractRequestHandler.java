@@ -6,8 +6,8 @@ import com.creants.creants_2x.core.api.ICoreAPI;
 import com.creants.creants_2x.core.util.DefaultMessageFactory;
 import com.creants.creants_2x.socket.gate.IChannelService;
 import com.creants.creants_2x.socket.gate.IMessageWriter;
-import com.creants.creants_2x.socket.gate.entities.CASObject;
-import com.creants.creants_2x.socket.gate.wood.User;
+import com.creants.creants_2x.socket.gate.entities.QAntObject;
+import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
 /**
  * Lớp trừu tượng của một RequestHandler
@@ -26,17 +26,17 @@ public abstract class AbstractRequestHandler implements IRequestHandler {
 	}
 
 
-	protected void writeMessage(User user, CASObject message) {
+	protected void writeMessage(QAntUser user, QAntObject message) {
 		messageWriter.writeMessage(user, message);
 	}
 
 
-	protected void writeMessage(List<User> users, CASObject message) {
+	protected void writeMessage(List<QAntUser> users, QAntObject message) {
 		messageWriter.writeMessage(users, message);
 	}
 
 
-	protected void writeErrorMessage(User user, String errorCmdId, short errorCode, String errorMessage) {
+	protected void writeErrorMessage(QAntUser user, String errorCmdId, short errorCode, String errorMessage) {
 		messageWriter.writeMessage(user, DefaultMessageFactory.createErrorMessage(errorCmdId, errorCode, errorMessage));
 	}
 

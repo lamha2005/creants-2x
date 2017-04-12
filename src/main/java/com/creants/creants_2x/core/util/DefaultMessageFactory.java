@@ -1,8 +1,8 @@
 package com.creants.creants_2x.core.util;
 
 import com.creants.creants_2x.core.event.SystemNetworkConstant;
-import com.creants.creants_2x.socket.gate.entities.CASObject;
-import com.creants.creants_2x.socket.gate.wood.User;
+import com.creants.creants_2x.socket.gate.entities.QAntObject;
+import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
 /**
  * @author LamHa
@@ -12,8 +12,8 @@ public class DefaultMessageFactory {
 	private static final byte PROTOCOL_VERSION = 1;
 
 
-	public static CASObject createMessage(String commandId) {
-		CASObject message = new CASObject();
+	public static QAntObject createMessage(String commandId) {
+		QAntObject message = new QAntObject();
 		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, commandId);
 		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;
@@ -32,8 +32,8 @@ public class DefaultMessageFactory {
 	 * @param errorMessage
 	 *            thông tin lỗi
 	 */
-	public static CASObject createErrorMessage(String errorCmdId, short code, String errorMessage) {
-		CASObject message = new CASObject();
+	public static QAntObject createErrorMessage(String errorCmdId, short code, String errorMessage) {
+		QAntObject message = new QAntObject();
 		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_ERROR);
 		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		message.putUtfString(SystemNetworkConstant.KEYS_ERROR_COMMAND_ID, errorCmdId);
@@ -43,7 +43,7 @@ public class DefaultMessageFactory {
 	}
 
 
-	public static CASObject responseMessage(String commandId) {
+	public static QAntObject responseMessage(String commandId) {
 		return createMessage(commandId);
 	}
 
@@ -54,8 +54,8 @@ public class DefaultMessageFactory {
 	 * @param sessionId
 	 * @return
 	 */
-	public static CASObject createConnectMessage(long sessionId) {
-		CASObject message = new CASObject();
+	public static QAntObject createConnectMessage(long sessionId) {
+		QAntObject message = new QAntObject();
 		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_USER_CONNECT);
 		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;
@@ -68,8 +68,8 @@ public class DefaultMessageFactory {
 	 * @param userId
 	 * @return
 	 */
-	public static CASObject createDisconnectMessage(User user) {
-		CASObject message = new CASObject();
+	public static QAntObject createDisconnectMessage(QAntUser user) {
+		QAntObject message = new QAntObject();
 		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_USER_CONNECT);
 		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;
@@ -81,8 +81,8 @@ public class DefaultMessageFactory {
 	 * 
 	 * @return
 	 */
-	public static CASObject createMessageInGame() {
-		CASObject message = new CASObject();
+	public static QAntObject createMessageInGame() {
+		QAntObject message = new QAntObject();
 		message.putUtfString(SystemNetworkConstant.KEYS_COMMAND_ID, SystemNetworkConstant.COMMAND_USER_CONNECT);
 		message.putByte(SystemNetworkConstant.KEYB_PROTOCOL_VERSION, PROTOCOL_VERSION);
 		return message;

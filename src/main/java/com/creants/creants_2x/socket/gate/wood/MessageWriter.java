@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.creants.creants_2x.socket.gate.IMessageWriter;
 import com.creants.creants_2x.socket.gate.MessageHandler;
-import com.creants.creants_2x.socket.gate.entities.CASObject;
+import com.creants.creants_2x.socket.gate.entities.QAntObject;
 
 /**
  * @author LamHa
@@ -20,13 +20,13 @@ public class MessageWriter implements IMessageWriter {
 
 
 	@Override
-	public void writeMessage(User user, CASObject message) {
+	public void writeMessage(QAntUser user, QAntObject message) {
 		messageHandler.send(user, message);
 	}
 
 
 	@Override
-	public void writeMessage(List<User> users, CASObject message) {
+	public void writeMessage(List<QAntUser> users, QAntObject message) {
 		messageHandler.send(users, message);
 	}
 

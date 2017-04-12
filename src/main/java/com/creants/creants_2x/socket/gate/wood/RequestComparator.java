@@ -2,16 +2,16 @@ package com.creants.creants_2x.socket.gate.wood;
 
 import java.util.Comparator;
 
-import com.creants.creants_2x.socket.gate.entities.ICASObject;
+import com.creants.creants_2x.socket.gate.entities.IQAntObject;
 
 /**
  * @author LamHa
  *
  */
-public class RequestComparator implements Comparator<ICASObject> {
+public class RequestComparator implements Comparator<IQAntObject> {
 
 	@Override
-	public int compare(ICASObject o1, ICASObject o2) {
+	public int compare(IQAntObject o1, IQAntObject o2) {
 		return 0;
 	}
 

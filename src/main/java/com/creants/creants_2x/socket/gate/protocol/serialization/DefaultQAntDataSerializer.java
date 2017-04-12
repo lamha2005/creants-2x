@@ -17,14 +17,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.creants.creants_2x.socket.exception.CASCodecException;
-import com.creants.creants_2x.socket.gate.entities.CASArray;
-import com.creants.creants_2x.socket.gate.entities.CASArrayLite;
-import com.creants.creants_2x.socket.gate.entities.CASDataType;
-import com.creants.creants_2x.socket.gate.entities.CASDataWrapper;
-import com.creants.creants_2x.socket.gate.entities.CASObject;
-import com.creants.creants_2x.socket.gate.entities.CASObjectLite;
-import com.creants.creants_2x.socket.gate.entities.ICASArray;
-import com.creants.creants_2x.socket.gate.entities.ICASObject;
+import com.creants.creants_2x.socket.gate.entities.QAntArray;
+import com.creants.creants_2x.socket.gate.entities.QAntArrayLite;
+import com.creants.creants_2x.socket.gate.entities.QAntDataType;
+import com.creants.creants_2x.socket.gate.entities.QAntDataWrapper;
+import com.creants.creants_2x.socket.gate.entities.QAntObject;
+import com.creants.creants_2x.socket.gate.entities.QAntObjectLite;
+import com.creants.creants_2x.socket.gate.entities.IQAntArray;
+import com.creants.creants_2x.socket.gate.entities.IQAntObject;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -37,21 +37,21 @@ import net.sf.json.JSONObject;
  *         http://docs2x.smartfoxserver.com/api-docs/cpp-doc/class_sfs2_x_1_1_entities_1_1_data_1_1_i_s_f_s_object.html
  *
  */
-public class DefaultCASDataSerializer implements ICASDataSerializer {
-	private static DefaultCASDataSerializer instance;
+public class DefaultQAntDataSerializer implements IQAntDataSerializer {
+	private static DefaultQAntDataSerializer instance;
 	private static final int BUFFER_CHUNK_SIZE = 512;
 
 	static {
-		DefaultCASDataSerializer.instance = new DefaultCASDataSerializer();
+		DefaultQAntDataSerializer.instance = new DefaultQAntDataSerializer();
 	}
 
 
-	public static DefaultCASDataSerializer getInstance() {
-		return DefaultCASDataSerializer.instance;
+	public static DefaultQAntDataSerializer getInstance() {
+		return DefaultQAntDataSerializer.instance;
 	}
 
 
-	private DefaultCASDataSerializer() {
+	private DefaultQAntDataSerializer() {
 	}
 
 
@@ -67,7 +67,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public ICASArray binary2array(byte[] data) {
+	public IQAntArray binary2array(byte[] data) {
 		if (data.length < 3) {
 			throw new IllegalStateException(
 					"Can't decode an CASArray. Byte data is insufficient. Size: " + data.length + " bytes");
@@ -79,12 +79,12 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	private ICASArray decodeCASArray(ByteBuffer buffer) {
-		ICASArray casArray = CASArray.newInstance();
+	private IQAntArray decodeCASArray(ByteBuffer buffer) {
+		IQAntArray casArray = QAntArray.newInstance();
 		byte headerBuffer = buffer.get();
-		if (headerBuffer != CASDataType.CAS_ARRAY.getTypeID()) {
+		if (headerBuffer != QAntDataType.QANT_ARRAY.getTypeID()) {
 			throw new IllegalStateException(
-					"Invalid CASDataType. Expected: " + CASDataType.CAS_ARRAY.getTypeID() + ", found: " + headerBuffer);
+					"Invalid CASDataType. Expected: " + QAntDataType.QANT_ARRAY.getTypeID() + ", found: " + headerBuffer);
 		}
 
 		short size = buffer.getShort();
@@ -93,7 +93,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		}
 		try {
 			for (int i = 0; i < size; ++i) {
-				CASDataWrapper decodedObject = decodeObject(buffer);
+				QAntDataWrapper decodedObject = decodeObject(buffer);
 				if (decodedObject == null) {
 					throw new IllegalStateException("Could not decode CASArray item at index: " + i);
 				}
@@ -107,7 +107,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public ICASObject binary2object(byte[] data) {
+	public IQAntObject binary2object(byte[] data) {
 		if (data.length < 3) {
 			throw new IllegalStateException(
 					"Can't decode an CASObject. Byte data is insufficient. Size: " + data.length + " bytes");
@@ -119,11 +119,11 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	private ICASObject decodeCASObject(ByteBuffer buffer) {
-		ICASObject casObject = CASObject.newInstance();
+	private IQAntObject decodeCASObject(ByteBuffer buffer) {
+		IQAntObject casObject = QAntObject.newInstance();
 		byte headerBuffer = buffer.get();
-		if (headerBuffer != CASDataType.CAS_OBJECT.getTypeID()) {
-			throw new IllegalStateException("Invalid CASDataType. Expected: " + CASDataType.CAS_OBJECT.getTypeID()
+		if (headerBuffer != QAntDataType.QANT_OBJECT.getTypeID()) {
+			throw new IllegalStateException("Invalid CASDataType. Expected: " + QAntDataType.QANT_OBJECT.getTypeID()
 					+ ", found: " + headerBuffer);
 		}
 		short size = buffer.getShort();
@@ -139,7 +139,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 				byte[] keyData = new byte[keySize];
 				buffer.get(keyData, 0, keyData.length);
 				String key = new String(keyData);
-				CASDataWrapper decodedObject = decodeObject(buffer);
+				QAntDataWrapper decodedObject = decodeObject(buffer);
 				if (decodedObject == null) {
 					throw new IllegalStateException("Could not decode value for key: " + keyData);
 				}
@@ -153,7 +153,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public ICASArray json2array(String jsonStr) {
+	public IQAntArray json2array(String jsonStr) {
 		if (jsonStr.length() < 2) {
 			throw new IllegalStateException(
 					"Can't decode CASObject. JSON String is too short. Len: " + jsonStr.length());
@@ -163,10 +163,10 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	private ICASArray decodeCASArray(JSONArray jsa) {
-		ICASArray casArray = (ICASArray) CASArrayLite.newInstance();
+	private IQAntArray decodeCASArray(JSONArray jsa) {
+		IQAntArray casArray = (IQAntArray) QAntArrayLite.newInstance();
 		for (Object value : jsa) {
-			CASDataWrapper decodedObject = decodeJsonObject(value);
+			QAntDataWrapper decodedObject = decodeJsonObject(value);
 			if (decodedObject == null) {
 				throw new IllegalStateException("(json2sfarray) Could not decode value for object: " + value);
 			}
@@ -177,7 +177,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public ICASObject json2object(String jsonStr) {
+	public IQAntObject json2object(String jsonStr) {
 		if (jsonStr.length() < 2) {
 			throw new IllegalStateException(
 					"Can't decode CASObject. JSON String is too short. Len: " + jsonStr.length());
@@ -188,11 +188,11 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	private ICASObject decodeCASObject(JSONObject jso) {
-		ICASObject CASObject = (ICASObject) CASObjectLite.newInstance();
+	private IQAntObject decodeCASObject(JSONObject jso) {
+		IQAntObject CASObject = (IQAntObject) QAntObjectLite.newInstance();
 		for (Object key : jso.keySet()) {
 			Object value = jso.get(key);
-			CASDataWrapper decodedObject = decodeJsonObject(value);
+			QAntDataWrapper decodedObject = decodeJsonObject(value);
 			if (decodedObject == null) {
 				throw new IllegalStateException("(json2CASobj) Could not decode value for key: " + key);
 			}
@@ -202,38 +202,38 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	private CASDataWrapper decodeJsonObject(Object o) {
+	private QAntDataWrapper decodeJsonObject(Object o) {
 		if (o instanceof Integer) {
-			return new CASDataWrapper(CASDataType.INT, o);
+			return new QAntDataWrapper(QAntDataType.INT, o);
 		}
 		if (o instanceof Long) {
-			return new CASDataWrapper(CASDataType.LONG, o);
+			return new QAntDataWrapper(QAntDataType.LONG, o);
 		}
 		if (o instanceof Double) {
-			return new CASDataWrapper(CASDataType.DOUBLE, o);
+			return new QAntDataWrapper(QAntDataType.DOUBLE, o);
 		}
 		if (o instanceof Boolean) {
-			return new CASDataWrapper(CASDataType.BOOL, o);
+			return new QAntDataWrapper(QAntDataType.BOOL, o);
 		}
 		if (o instanceof String) {
 			String value = (String) o;
-			CASDataType type = CASDataType.UTF_STRING;
+			QAntDataType type = QAntDataType.UTF_STRING;
 			if (value.length() > 32767) {
-				type = CASDataType.TEXT;
+				type = QAntDataType.TEXT;
 			}
-			return new CASDataWrapper(type, o);
+			return new QAntDataWrapper(type, o);
 		}
 
 		if (o instanceof JSONObject) {
 			JSONObject jso = (JSONObject) o;
 			if (jso.isNullObject()) {
-				return new CASDataWrapper(CASDataType.NULL, null);
+				return new QAntDataWrapper(QAntDataType.NULL, null);
 			}
-			return new CASDataWrapper(CASDataType.CAS_OBJECT, decodeCASObject(jso));
+			return new QAntDataWrapper(QAntDataType.QANT_OBJECT, decodeCASObject(jso));
 		}
 
 		if (o instanceof JSONArray) {
-			return new CASDataWrapper(CASDataType.CAS_ARRAY, decodeCASArray((JSONArray) o));
+			return new QAntDataWrapper(QAntDataType.QANT_ARRAY, decodeCASArray((JSONArray) o));
 		}
 
 		throw new IllegalArgumentException(
@@ -244,9 +244,9 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public CASObject resultSet2object(ResultSet rset) throws SQLException {
+	public QAntObject resultSet2object(ResultSet rset) throws SQLException {
 		ResultSetMetaData metaData = rset.getMetaData();
-		CASObject CASo = new CASObject();
+		QAntObject CASo = new QAntObject();
 		if (rset.isBeforeFirst()) {
 			rset.next();
 		}
@@ -310,8 +310,8 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public CASArray resultSet2array(ResultSet rset) throws SQLException {
-		CASArray CASa = new CASArray();
+	public QAntArray resultSet2array(ResultSet rset) throws SQLException {
+		QAntArray CASa = new QAntArray();
 		while (rset.next()) {
 			CASa.addCASObject(resultSet2object(rset));
 		}
@@ -320,18 +320,18 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public byte[] object2binary(ICASObject object) {
-		ByteBuffer buffer = ByteBuffer.allocate(DefaultCASDataSerializer.BUFFER_CHUNK_SIZE);
-		buffer.put((byte) CASDataType.CAS_OBJECT.getTypeID());
+	public byte[] object2binary(IQAntObject object) {
+		ByteBuffer buffer = ByteBuffer.allocate(DefaultQAntDataSerializer.BUFFER_CHUNK_SIZE);
+		buffer.put((byte) QAntDataType.QANT_OBJECT.getTypeID());
 		buffer.putShort((short) object.size());
 		return obj2bin(object, buffer);
 	}
 
 
-	private byte[] obj2bin(ICASObject object, ByteBuffer buffer) {
+	private byte[] obj2bin(IQAntObject object, ByteBuffer buffer) {
 		Set<String> keys = object.getKeys();
 		for (String key : keys) {
-			CASDataWrapper wrapper = object.get(key);
+			QAntDataWrapper wrapper = object.get(key);
 			Object dataObj = wrapper.getObject();
 			buffer = encodeCASObjectKey(buffer, key);
 			buffer = encodeObject(buffer, wrapper.getTypeId(), dataObj);
@@ -345,18 +345,18 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@Override
-	public byte[] array2binary(ICASArray array) {
-		ByteBuffer buffer = ByteBuffer.allocate(DefaultCASDataSerializer.BUFFER_CHUNK_SIZE);
-		buffer.put((byte) CASDataType.CAS_ARRAY.getTypeID());
+	public byte[] array2binary(IQAntArray array) {
+		ByteBuffer buffer = ByteBuffer.allocate(DefaultQAntDataSerializer.BUFFER_CHUNK_SIZE);
+		buffer.put((byte) QAntDataType.QANT_ARRAY.getTypeID());
 		buffer.putShort((short) array.size());
 		return arr2bin(array, buffer);
 	}
 
 
-	private byte[] arr2bin(ICASArray array, ByteBuffer buffer) {
-		Iterator<CASDataWrapper> iter = array.iterator();
+	private byte[] arr2bin(IQAntArray array, ByteBuffer buffer) {
+		Iterator<QAntDataWrapper> iter = array.iterator();
 		while (iter.hasNext()) {
-			CASDataWrapper wrapper = (CASDataWrapper) iter.next();
+			QAntDataWrapper wrapper = (QAntDataWrapper) iter.next();
 			buffer = encodeObject(buffer, wrapper.getTypeId(), wrapper.getObject());
 		}
 
@@ -374,22 +374,22 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	public void flattenObject(Map<String, Object> map, CASObject casObj) {
-		for (Iterator<Map.Entry<String, CASDataWrapper>> it = casObj.iterator(); it.hasNext();) {
-			Map.Entry<String, CASDataWrapper> entry = (Map.Entry<String, CASDataWrapper>) it.next();
+	public void flattenObject(Map<String, Object> map, QAntObject casObj) {
+		for (Iterator<Map.Entry<String, QAntDataWrapper>> it = casObj.iterator(); it.hasNext();) {
+			Map.Entry<String, QAntDataWrapper> entry = (Map.Entry<String, QAntDataWrapper>) it.next();
 
 			String key = (String) entry.getKey();
-			CASDataWrapper value = (CASDataWrapper) entry.getValue();
-			if (value.getTypeId() == CASDataType.CAS_OBJECT) {
+			QAntDataWrapper value = (QAntDataWrapper) entry.getValue();
+			if (value.getTypeId() == QAntDataType.QANT_OBJECT) {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 
 				map.put(key, newMap);
 
-				flattenObject(newMap, (CASObject) value.getObject());
-			} else if (value.getTypeId() == CASDataType.CAS_ARRAY) {
+				flattenObject(newMap, (QAntObject) value.getObject());
+			} else if (value.getTypeId() == QAntDataType.QANT_ARRAY) {
 				List<Object> newList = new ArrayList<Object>();
 				map.put(key, newList);
-				flattenArray(newList, (CASArray) value.getObject());
+				flattenArray(newList, (QAntArray) value.getObject());
 			} else {
 				map.put(key, value.getObject());
 			}
@@ -397,17 +397,17 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	public void flattenArray(List<Object> array, CASArray casArray) {
-		for (Iterator<CASDataWrapper> it = casArray.iterator(); it.hasNext();) {
-			CASDataWrapper value = (CASDataWrapper) it.next();
-			if (value.getTypeId() == CASDataType.CAS_OBJECT) {
+	public void flattenArray(List<Object> array, QAntArray casArray) {
+		for (Iterator<QAntDataWrapper> it = casArray.iterator(); it.hasNext();) {
+			QAntDataWrapper value = (QAntDataWrapper) it.next();
+			if (value.getTypeId() == QAntDataType.QANT_OBJECT) {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 				array.add(newMap);
-				flattenObject(newMap, (CASObject) value.getObject());
-			} else if (value.getTypeId() == CASDataType.CAS_ARRAY) {
+				flattenObject(newMap, (QAntObject) value.getObject());
+			} else if (value.getTypeId() == QAntDataType.QANT_ARRAY) {
 				List<Object> newList = new ArrayList<Object>();
 				array.add(newList);
-				flattenArray(newList, (CASArray) value.getObject());
+				flattenArray(newList, (QAntArray) value.getObject());
 			} else {
 				array.add(value.getObject());
 			}
@@ -415,62 +415,62 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	private CASDataWrapper decodeObject(ByteBuffer buffer) throws CASCodecException {
-		CASDataWrapper decodedObject = null;
+	private QAntDataWrapper decodeObject(ByteBuffer buffer) throws CASCodecException {
+		QAntDataWrapper decodedObject = null;
 		byte headerByte = buffer.get();
-		if (headerByte == CASDataType.NULL.getTypeID()) {
+		if (headerByte == QAntDataType.NULL.getTypeID()) {
 			decodedObject = binDecode_NULL(buffer);
-		} else if (headerByte == CASDataType.BOOL.getTypeID()) {
+		} else if (headerByte == QAntDataType.BOOL.getTypeID()) {
 			decodedObject = binDecode_BOOL(buffer);
-		} else if (headerByte == CASDataType.BOOL_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.BOOL_ARRAY.getTypeID()) {
 			decodedObject = binDecode_BOOL_ARRAY(buffer);
-		} else if (headerByte == CASDataType.BYTE.getTypeID()) {
+		} else if (headerByte == QAntDataType.BYTE.getTypeID()) {
 			decodedObject = binDecode_BYTE(buffer);
-		} else if (headerByte == CASDataType.BYTE_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.BYTE_ARRAY.getTypeID()) {
 			decodedObject = binDecode_BYTE_ARRAY(buffer);
-		} else if (headerByte == CASDataType.SHORT.getTypeID()) {
+		} else if (headerByte == QAntDataType.SHORT.getTypeID()) {
 			decodedObject = binDecode_SHORT(buffer);
-		} else if (headerByte == CASDataType.SHORT_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.SHORT_ARRAY.getTypeID()) {
 			decodedObject = binDecode_SHORT_ARRAY(buffer);
-		} else if (headerByte == CASDataType.INT.getTypeID()) {
+		} else if (headerByte == QAntDataType.INT.getTypeID()) {
 			decodedObject = binDecode_INT(buffer);
-		} else if (headerByte == CASDataType.INT_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.INT_ARRAY.getTypeID()) {
 			decodedObject = binDecode_INT_ARRAY(buffer);
-		} else if (headerByte == CASDataType.LONG.getTypeID()) {
+		} else if (headerByte == QAntDataType.LONG.getTypeID()) {
 			decodedObject = binDecode_LONG(buffer);
-		} else if (headerByte == CASDataType.LONG_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.LONG_ARRAY.getTypeID()) {
 			decodedObject = binDecode_LONG_ARRAY(buffer);
-		} else if (headerByte == CASDataType.FLOAT.getTypeID()) {
+		} else if (headerByte == QAntDataType.FLOAT.getTypeID()) {
 			decodedObject = binDecode_FLOAT(buffer);
-		} else if (headerByte == CASDataType.FLOAT_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.FLOAT_ARRAY.getTypeID()) {
 			decodedObject = binDecode_FLOAT_ARRAY(buffer);
-		} else if (headerByte == CASDataType.DOUBLE.getTypeID()) {
+		} else if (headerByte == QAntDataType.DOUBLE.getTypeID()) {
 			decodedObject = binDecode_DOUBLE(buffer);
-		} else if (headerByte == CASDataType.DOUBLE_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.DOUBLE_ARRAY.getTypeID()) {
 			decodedObject = binDecode_DOUBLE_ARRAY(buffer);
-		} else if (headerByte == CASDataType.UTF_STRING.getTypeID()) {
+		} else if (headerByte == QAntDataType.UTF_STRING.getTypeID()) {
 			decodedObject = binDecode_UTF_STRING(buffer);
-		} else if (headerByte == CASDataType.TEXT.getTypeID()) {
+		} else if (headerByte == QAntDataType.TEXT.getTypeID()) {
 			decodedObject = binDecode_TEXT(buffer);
-		} else if (headerByte == CASDataType.UTF_STRING_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.UTF_STRING_ARRAY.getTypeID()) {
 			decodedObject = binDecode_UTF_STRING_ARRAY(buffer);
-		} else if (headerByte == CASDataType.CAS_ARRAY.getTypeID()) {
+		} else if (headerByte == QAntDataType.QANT_ARRAY.getTypeID()) {
 			buffer.position(buffer.position() - 1);
-			decodedObject = new CASDataWrapper(CASDataType.CAS_ARRAY, decodeCASArray(buffer));
+			decodedObject = new QAntDataWrapper(QAntDataType.QANT_ARRAY, decodeCASArray(buffer));
 		} else {
-			if (headerByte != CASDataType.CAS_OBJECT.getTypeID()) {
+			if (headerByte != QAntDataType.QANT_OBJECT.getTypeID()) {
 				throw new CASCodecException("Unknow CASDataType ID: " + headerByte);
 			}
 			buffer.position(buffer.position() - 1);
-			ICASObject CASObj = decodeCASObject(buffer);
-			CASDataType type = CASDataType.CAS_OBJECT;
+			IQAntObject CASObj = decodeCASObject(buffer);
+			QAntDataType type = QAntDataType.QANT_OBJECT;
 			Object finalCASObj = CASObj;
 			// if (CASObj.containsKey(CLASS_MARKER_KEY) &&
 			// CASObj.containsKey(CLASS_FIELDS_KEY)) {
 			// type = CASDataType.CLASS;
 			// finalCASObj = CAS2pojo(CASObj);
 			// }
-			decodedObject = new CASDataWrapper(type, finalCASObj);
+			decodedObject = new QAntDataWrapper(type, finalCASObj);
 		}
 
 		return decodedObject;
@@ -478,7 +478,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 
 	@SuppressWarnings("unchecked")
-	private ByteBuffer encodeObject(ByteBuffer buffer, CASDataType typeId, Object object) {
+	private ByteBuffer encodeObject(ByteBuffer buffer, QAntDataType typeId, Object object) {
 		switch (typeId) {
 			case NULL: {
 				buffer = binEncode_NULL(buffer);
@@ -552,12 +552,12 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 				buffer = binEncode_UTF_STRING_ARRAY(buffer, (Collection<String>) object);
 				break;
 			}
-			case CAS_ARRAY: {
-				buffer = addData(buffer, array2binary((ICASArray) object));
+			case QANT_ARRAY: {
+				buffer = addData(buffer, array2binary((IQAntArray) object));
 				break;
 			}
-			case CAS_OBJECT: {
-				buffer = addData(buffer, object2binary((ICASObject) object));
+			case QANT_OBJECT: {
+				buffer = addData(buffer, object2binary((IQAntObject) object));
 				break;
 			}
 			default: {
@@ -568,12 +568,12 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	}
 
 
-	private CASDataWrapper binDecode_NULL(ByteBuffer buffer) {
-		return new CASDataWrapper(CASDataType.NULL, null);
+	private QAntDataWrapper binDecode_NULL(ByteBuffer buffer) {
+		return new QAntDataWrapper(QAntDataType.NULL, null);
 	}
 
 
-	private CASDataWrapper binDecode_BOOL(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_BOOL(ByteBuffer buffer) throws CASCodecException {
 		byte boolByte = buffer.get();
 		Boolean bool = null;
 		if (boolByte == 0) {
@@ -584,47 +584,47 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			}
 			bool = new Boolean(true);
 		}
-		return new CASDataWrapper(CASDataType.BOOL, bool);
+		return new QAntDataWrapper(QAntDataType.BOOL, bool);
 	}
 
 
-	private CASDataWrapper binDecode_BYTE(ByteBuffer buffer) {
+	private QAntDataWrapper binDecode_BYTE(ByteBuffer buffer) {
 		byte boolByte = buffer.get();
-		return new CASDataWrapper(CASDataType.BYTE, boolByte);
+		return new QAntDataWrapper(QAntDataType.BYTE, boolByte);
 	}
 
 
-	private CASDataWrapper binDecode_SHORT(ByteBuffer buffer) {
+	private QAntDataWrapper binDecode_SHORT(ByteBuffer buffer) {
 		short shortValue = buffer.getShort();
-		return new CASDataWrapper(CASDataType.SHORT, shortValue);
+		return new QAntDataWrapper(QAntDataType.SHORT, shortValue);
 	}
 
 
-	private CASDataWrapper binDecode_INT(ByteBuffer buffer) {
+	private QAntDataWrapper binDecode_INT(ByteBuffer buffer) {
 		int intValue = buffer.getInt();
-		return new CASDataWrapper(CASDataType.INT, intValue);
+		return new QAntDataWrapper(QAntDataType.INT, intValue);
 	}
 
 
-	private CASDataWrapper binDecode_LONG(ByteBuffer buffer) {
+	private QAntDataWrapper binDecode_LONG(ByteBuffer buffer) {
 		long longValue = buffer.getLong();
-		return new CASDataWrapper(CASDataType.LONG, longValue);
+		return new QAntDataWrapper(QAntDataType.LONG, longValue);
 	}
 
 
-	private CASDataWrapper binDecode_FLOAT(ByteBuffer buffer) {
+	private QAntDataWrapper binDecode_FLOAT(ByteBuffer buffer) {
 		float floatValue = buffer.getFloat();
-		return new CASDataWrapper(CASDataType.FLOAT, floatValue);
+		return new QAntDataWrapper(QAntDataType.FLOAT, floatValue);
 	}
 
 
-	private CASDataWrapper binDecode_DOUBLE(ByteBuffer buffer) {
+	private QAntDataWrapper binDecode_DOUBLE(ByteBuffer buffer) {
 		double doubleValue = buffer.getDouble();
-		return new CASDataWrapper(CASDataType.DOUBLE, doubleValue);
+		return new QAntDataWrapper(QAntDataType.DOUBLE, doubleValue);
 	}
 
 
-	private CASDataWrapper binDecode_UTF_STRING(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_UTF_STRING(ByteBuffer buffer) throws CASCodecException {
 		short strLen = buffer.getShort();
 		if (strLen < 0) {
 			throw new CASCodecException("Error decoding UtfString. Negative size: " + strLen);
@@ -632,11 +632,11 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		byte[] strData = new byte[strLen];
 		buffer.get(strData, 0, strLen);
 		String decodedString = new String(strData);
-		return new CASDataWrapper(CASDataType.UTF_STRING, decodedString);
+		return new QAntDataWrapper(QAntDataType.UTF_STRING, decodedString);
 	}
 
 
-	private CASDataWrapper binDecode_TEXT(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_TEXT(ByteBuffer buffer) throws CASCodecException {
 		int strLen = buffer.getInt();
 		if (strLen < 0) {
 			throw new CASCodecException("Error decoding UtfString. Negative size: " + strLen);
@@ -644,11 +644,11 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		byte[] strData = new byte[strLen];
 		buffer.get(strData, 0, strLen);
 		String decodedString = new String(strData);
-		return new CASDataWrapper(CASDataType.TEXT, decodedString);
+		return new QAntDataWrapper(QAntDataType.TEXT, decodedString);
 	}
 
 
-	private CASDataWrapper binDecode_BOOL_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_BOOL_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Boolean> array = new ArrayList<Boolean>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -662,33 +662,33 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 				array.add(true);
 			}
 		}
-		return new CASDataWrapper(CASDataType.BOOL_ARRAY, array);
+		return new QAntDataWrapper(QAntDataType.BOOL_ARRAY, array);
 	}
 
 
-	private CASDataWrapper binDecode_BYTE_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_BYTE_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		int arraySize = buffer.getInt();
 		if (arraySize < 0) {
 			throw new CASCodecException("Error decoding typed array size. Negative size: " + arraySize);
 		}
 		byte[] byteData = new byte[arraySize];
 		buffer.get(byteData, 0, arraySize);
-		return new CASDataWrapper(CASDataType.BYTE_ARRAY, byteData);
+		return new QAntDataWrapper(QAntDataType.BYTE_ARRAY, byteData);
 	}
 
 
-	private CASDataWrapper binDecode_SHORT_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_SHORT_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Short> array = new ArrayList<Short>();
 		for (int j = 0; j < arraySize; ++j) {
 			short shortValue = buffer.getShort();
 			array.add(shortValue);
 		}
-		return new CASDataWrapper(CASDataType.SHORT_ARRAY, array);
+		return new QAntDataWrapper(QAntDataType.SHORT_ARRAY, array);
 	}
 
 
-	private CASDataWrapper binDecode_INT_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_INT_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Integer> array = new ArrayList<Integer>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -696,44 +696,44 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			array.add(intValue);
 		}
 
-		return new CASDataWrapper(CASDataType.INT_ARRAY, array);
+		return new QAntDataWrapper(QAntDataType.INT_ARRAY, array);
 	}
 
 
-	private CASDataWrapper binDecode_LONG_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_LONG_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Long> array = new ArrayList<Long>();
 		for (int j = 0; j < arraySize; ++j) {
 			long longValue = buffer.getLong();
 			array.add(longValue);
 		}
-		return new CASDataWrapper(CASDataType.LONG_ARRAY, array);
+		return new QAntDataWrapper(QAntDataType.LONG_ARRAY, array);
 	}
 
 
-	private CASDataWrapper binDecode_FLOAT_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_FLOAT_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Float> array = new ArrayList<Float>();
 		for (int j = 0; j < arraySize; ++j) {
 			float floatValue = buffer.getFloat();
 			array.add(floatValue);
 		}
-		return new CASDataWrapper(CASDataType.FLOAT_ARRAY, array);
+		return new QAntDataWrapper(QAntDataType.FLOAT_ARRAY, array);
 	}
 
 
-	private CASDataWrapper binDecode_DOUBLE_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_DOUBLE_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Double> array = new ArrayList<Double>();
 		for (int j = 0; j < arraySize; ++j) {
 			double doubleValue = buffer.getDouble();
 			array.add(doubleValue);
 		}
-		return new CASDataWrapper(CASDataType.DOUBLE_ARRAY, array);
+		return new QAntDataWrapper(QAntDataType.DOUBLE_ARRAY, array);
 	}
 
 
-	private CASDataWrapper binDecode_UTF_STRING_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_UTF_STRING_ARRAY(ByteBuffer buffer) throws CASCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<String> array = new ArrayList<String>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -746,7 +746,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			buffer.get(strData, 0, strLen);
 			array.add(new String(strData));
 		}
-		return new CASDataWrapper(CASDataType.UTF_STRING_ARRAY, array);
+		return new QAntDataWrapper(QAntDataType.UTF_STRING_ARRAY, array);
 	}
 
 
@@ -768,20 +768,20 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 		if (value == null)
 			return null;
 
-		byte[] data = { (byte) CASDataType.BOOL.getTypeID(), (byte) (value.booleanValue() ? 1 : 0) };
+		byte[] data = { (byte) QAntDataType.BOOL.getTypeID(), (byte) (value.booleanValue() ? 1 : 0) };
 		return addData(buffer, data);
 	}
 
 
 	private ByteBuffer binEncode_BYTE(ByteBuffer buffer, Byte value) {
-		byte[] data = { (byte) CASDataType.BYTE.getTypeID(), value };
+		byte[] data = { (byte) QAntDataType.BYTE.getTypeID(), value };
 		return addData(buffer, data);
 	}
 
 
 	private ByteBuffer binEncode_SHORT(ByteBuffer buffer, Short value) {
 		ByteBuffer buf = ByteBuffer.allocate(3);
-		buf.put((byte) CASDataType.SHORT.getTypeID());
+		buf.put((byte) QAntDataType.SHORT.getTypeID());
 		buf.putShort(value);
 		return addData(buffer, buf.array());
 	}
@@ -789,7 +789,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_INT(ByteBuffer buffer, Integer value) {
 		ByteBuffer buf = ByteBuffer.allocate(5);
-		buf.put((byte) CASDataType.INT.getTypeID());
+		buf.put((byte) QAntDataType.INT.getTypeID());
 		buf.putInt(value);
 		return addData(buffer, buf.array());
 	}
@@ -797,7 +797,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_LONG(ByteBuffer buffer, Long value) {
 		ByteBuffer buf = ByteBuffer.allocate(9);
-		buf.put((byte) CASDataType.LONG.getTypeID());
+		buf.put((byte) QAntDataType.LONG.getTypeID());
 		buf.putLong(value);
 		return addData(buffer, buf.array());
 	}
@@ -805,7 +805,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_FLOAT(ByteBuffer buffer, Float value) {
 		ByteBuffer buf = ByteBuffer.allocate(5);
-		buf.put((byte) CASDataType.FLOAT.getTypeID());
+		buf.put((byte) QAntDataType.FLOAT.getTypeID());
 		buf.putFloat(value);
 		return addData(buffer, buf.array());
 	}
@@ -813,7 +813,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_DOUBLE(ByteBuffer buffer, Double value) {
 		ByteBuffer buf = ByteBuffer.allocate(9);
-		buf.put((byte) CASDataType.DOUBLE.getTypeID());
+		buf.put((byte) QAntDataType.DOUBLE.getTypeID());
 		buf.putDouble(value);
 		return addData(buffer, buf.array());
 	}
@@ -822,7 +822,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	private ByteBuffer binEncode_UTF_STRING(ByteBuffer buffer, String value) {
 		byte[] stringBytes = value.getBytes();
 		ByteBuffer buf = ByteBuffer.allocate(3 + stringBytes.length);
-		buf.put((byte) CASDataType.UTF_STRING.getTypeID());
+		buf.put((byte) QAntDataType.UTF_STRING.getTypeID());
 		buf.putShort((short) stringBytes.length);
 		buf.put(stringBytes);
 		return addData(buffer, buf.array());
@@ -832,7 +832,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 	private ByteBuffer binEncode_TEXT(ByteBuffer buffer, String value) {
 		byte[] stringBytes = value.getBytes();
 		ByteBuffer buf = ByteBuffer.allocate(5 + stringBytes.length);
-		buf.put((byte) CASDataType.TEXT.getTypeID());
+		buf.put((byte) QAntDataType.TEXT.getTypeID());
 		buf.putInt(stringBytes.length);
 		buf.put(stringBytes);
 		return addData(buffer, buf.array());
@@ -841,7 +841,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_BOOL_ARRAY(ByteBuffer buffer, Collection<Boolean> value) {
 		ByteBuffer buf = ByteBuffer.allocate(3 + value.size());
-		buf.put((byte) CASDataType.BOOL_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.BOOL_ARRAY.getTypeID());
 		buf.putShort((short) value.size());
 		for (boolean b : value) {
 			buf.put((byte) (b ? 1 : 0));
@@ -852,7 +852,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_BYTE_ARRAY(ByteBuffer buffer, byte[] value) {
 		ByteBuffer buf = ByteBuffer.allocate(5 + value.length);
-		buf.put((byte) CASDataType.BYTE_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.BYTE_ARRAY.getTypeID());
 		buf.putInt(value.length);
 		buf.put(value);
 		return addData(buffer, buf.array());
@@ -861,7 +861,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_SHORT_ARRAY(ByteBuffer buffer, Collection<Short> value) {
 		ByteBuffer buf = ByteBuffer.allocate(3 + 2 * value.size());
-		buf.put((byte) CASDataType.SHORT_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.SHORT_ARRAY.getTypeID());
 		buf.putShort((short) value.size());
 		for (short item : value) {
 			buf.putShort(item);
@@ -872,7 +872,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_INT_ARRAY(ByteBuffer buffer, Collection<Integer> value) {
 		ByteBuffer buf = ByteBuffer.allocate(3 + 4 * value.size());
-		buf.put((byte) CASDataType.INT_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.INT_ARRAY.getTypeID());
 		buf.putShort((short) value.size());
 		for (int item : value) {
 			buf.putInt(item);
@@ -883,7 +883,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_LONG_ARRAY(ByteBuffer buffer, Collection<Long> value) {
 		ByteBuffer buf = ByteBuffer.allocate(3 + 8 * value.size());
-		buf.put((byte) CASDataType.LONG_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.LONG_ARRAY.getTypeID());
 		buf.putShort((short) value.size());
 		for (long item : value) {
 			buf.putLong(item);
@@ -894,7 +894,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_FLOAT_ARRAY(ByteBuffer buffer, Collection<Float> value) {
 		ByteBuffer buf = ByteBuffer.allocate(3 + 4 * value.size());
-		buf.put((byte) CASDataType.FLOAT_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.FLOAT_ARRAY.getTypeID());
 		buf.putShort((short) value.size());
 		for (float item : value) {
 			buf.putFloat(item);
@@ -905,7 +905,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer binEncode_DOUBLE_ARRAY(ByteBuffer buffer, Collection<Double> value) {
 		ByteBuffer buf = ByteBuffer.allocate(3 + 8 * value.size());
-		buf.put((byte) CASDataType.DOUBLE_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.DOUBLE_ARRAY.getTypeID());
 		buf.putShort((short) value.size());
 		for (double item : value) {
 			buf.putDouble(item);
@@ -924,7 +924,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 			stringDataLen += 2 + binStr.length;
 		}
 		ByteBuffer buf = ByteBuffer.allocate(3 + stringDataLen);
-		buf.put((byte) CASDataType.UTF_STRING_ARRAY.getTypeID());
+		buf.put((byte) QAntDataType.UTF_STRING_ARRAY.getTypeID());
 		buf.putShort((short) value.size());
 		byte[][] array;
 		for (int length = (array = binStrings).length, i = 0; i < length; ++i) {
@@ -946,7 +946,7 @@ public class DefaultCASDataSerializer implements ICASDataSerializer {
 
 	private ByteBuffer addData(ByteBuffer buffer, byte[] newData) {
 		if (buffer.remaining() < newData.length) {
-			int newSize = DefaultCASDataSerializer.BUFFER_CHUNK_SIZE;
+			int newSize = DefaultQAntDataSerializer.BUFFER_CHUNK_SIZE;
 			if (newSize < newData.length) {
 				newSize = newData.length;
 			}

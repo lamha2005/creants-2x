@@ -1,6 +1,6 @@
 package com.creants.creants_2x.socket.gate;
 
-import com.creants.creants_2x.socket.gate.wood.User;
+import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
 /**
  * @author LamHa
@@ -9,5 +9,5 @@ import com.creants.creants_2x.socket.gate.wood.User;
 public interface IChannelService {
 	void disconnect(long sessionId);
 
-	void disconnect(User user);
+	void disconnect(QAntUser user);
 }

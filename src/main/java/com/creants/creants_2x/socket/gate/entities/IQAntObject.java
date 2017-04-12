@@ -9,8 +9,8 @@ import java.util.Set;
  * @author LamHM
  *
  */
-public interface ICASObject {
-	CASDataWrapper get(final String key);
+public interface IQAntObject {
+	QAntDataWrapper get(final String key);
 
 
 	boolean isNull(String key);
@@ -22,10 +22,10 @@ public interface ICASObject {
 	boolean removeElement(String key);
 
 
-	void put(final String key, final CASDataWrapper wrappedObject);
+	void put(final String key, final QAntDataWrapper wrappedObject);
 
 
-	Iterator<Map.Entry<String, CASDataWrapper>> iterator();
+	Iterator<Map.Entry<String, QAntDataWrapper>> iterator();
 
 
 	Set<String> getKeys();
@@ -109,10 +109,10 @@ public interface ICASObject {
 	Collection<String> getUtfStringArray(String key);
 
 
-	ICASArray getCASArray(String key);
+	IQAntArray getCASArray(String key);
 
 
-	ICASObject getCASObject(String key);
+	IQAntObject getCASObject(String key);
 
 
 	void putNull(String key);
@@ -169,9 +169,9 @@ public interface ICASObject {
 	void putUtfStringArray(String key, Collection<String> value);
 
 
-	void putCASArray(String key, ICASArray value);
+	void putCASArray(String key, IQAntArray value);
 
 
-	void putCASObject(String key, ICASObject value);
+	void putCASObject(String key, IQAntObject value);
 
 }

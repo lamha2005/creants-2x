@@ -14,48 +14,48 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.creants.creants_2x.socket.gate.protocol.serialization.DefaultCASDataSerializer;
+import com.creants.creants_2x.socket.gate.protocol.serialization.DefaultQAntDataSerializer;
 import com.creants.creants_2x.socket.gate.protocol.serialization.DefaultObjectDumpFormatter;
-import com.creants.creants_2x.socket.gate.protocol.serialization.ICASDataSerializer;
+import com.creants.creants_2x.socket.gate.protocol.serialization.IQAntDataSerializer;
 import com.creants.creants_2x.socket.util.ByteUtils;
 
 /**
  * @author LamHM
  *
  */
-public class CASObject implements ICASObject {
-	private Map<String, CASDataWrapper> dataHolder;
-	private ICASDataSerializer serializer;
+public class QAntObject implements IQAntObject {
+	private Map<String, QAntDataWrapper> dataHolder;
+	private IQAntDataSerializer serializer;
 
 
-	public static CASObject newFromBinaryData(final byte[] bytes) {
-		return (CASObject) DefaultCASDataSerializer.getInstance().binary2object(bytes);
+	public static QAntObject newFromBinaryData(final byte[] bytes) {
+		return (QAntObject) DefaultQAntDataSerializer.getInstance().binary2object(bytes);
 	}
 
 
-	public static ICASObject newFromJsonData(final String jsonStr) {
-		return DefaultCASDataSerializer.getInstance().json2object(jsonStr);
+	public static IQAntObject newFromJsonData(final String jsonStr) {
+		return DefaultQAntDataSerializer.getInstance().json2object(jsonStr);
 	}
 
 
-	public static CASObject newFromResultSet(final ResultSet rset) throws SQLException {
-		return DefaultCASDataSerializer.getInstance().resultSet2object(rset);
+	public static QAntObject newFromResultSet(final ResultSet rset) throws SQLException {
+		return DefaultQAntDataSerializer.getInstance().resultSet2object(rset);
 	}
 
 
-	public static CASObject newInstance() {
-		return new CASObject();
+	public static QAntObject newInstance() {
+		return new QAntObject();
 	}
 
 
-	public CASObject() {
-		dataHolder = new ConcurrentHashMap<String, CASDataWrapper>();
-		serializer = DefaultCASDataSerializer.getInstance();
+	public QAntObject() {
+		dataHolder = new ConcurrentHashMap<String, QAntDataWrapper>();
+		serializer = DefaultQAntDataSerializer.getInstance();
 	}
 
 
 	@Override
-	public Iterator<Map.Entry<String, CASDataWrapper>> iterator() {
+	public Iterator<Map.Entry<String, QAntDataWrapper>> iterator() {
 		return dataHolder.entrySet().iterator();
 	}
 
@@ -112,13 +112,13 @@ public class CASObject implements ICASObject {
 		final StringBuilder buffer = new StringBuilder();
 		buffer.append('{');
 		for (final String key : getKeys()) {
-			final CASDataWrapper wrapper = get(key);
+			final QAntDataWrapper wrapper = get(key);
 			buffer.append("(").append(wrapper.getTypeId().name().toLowerCase()).append(") ").append(key).append(": ");
-			if (wrapper.getTypeId() == CASDataType.CAS_OBJECT) {
-				buffer.append(((CASObject) wrapper.getObject()).getDump(false));
-			} else if (wrapper.getTypeId() == CASDataType.CAS_ARRAY) {
-				buffer.append(((CASArray) wrapper.getObject()).getDump(false));
-			} else if (wrapper.getTypeId() == CASDataType.BYTE_ARRAY) {
+			if (wrapper.getTypeId() == QAntDataType.QANT_OBJECT) {
+				buffer.append(((QAntObject) wrapper.getObject()).getDump(false));
+			} else if (wrapper.getTypeId() == QAntDataType.QANT_ARRAY) {
+				buffer.append(((QAntArray) wrapper.getObject()).getDump(false));
+			} else if (wrapper.getTypeId() == QAntDataType.BYTE_ARRAY) {
 				buffer.append(DefaultObjectDumpFormatter.prettyPrintByteArray((byte[]) wrapper.getObject()));
 			} else {
 				buffer.append(wrapper.getObject());
@@ -138,20 +138,20 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public boolean isNull(final String key) {
-		final CASDataWrapper wrapper = dataHolder.get(key);
-		return wrapper != null && wrapper.getTypeId() == CASDataType.NULL;
+		final QAntDataWrapper wrapper = dataHolder.get(key);
+		return wrapper != null && wrapper.getTypeId() == QAntDataType.NULL;
 	}
 
 
 	@Override
-	public CASDataWrapper get(final String key) {
+	public QAntDataWrapper get(final String key) {
 		return dataHolder.get(key);
 	}
 
 
 	@Override
 	public Boolean getBool(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -162,7 +162,7 @@ public class CASObject implements ICASObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Boolean> getBoolArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -172,7 +172,7 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public Byte getByte(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -182,7 +182,7 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public byte[] getByteArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -192,7 +192,7 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public Double getDouble(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -203,7 +203,7 @@ public class CASObject implements ICASObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Double> getDoubleArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -213,7 +213,7 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public Float getFloat(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -224,7 +224,7 @@ public class CASObject implements ICASObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Float> getFloatArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -234,7 +234,7 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public Integer getInt(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -245,7 +245,7 @@ public class CASObject implements ICASObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Integer> getIntArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -261,7 +261,7 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public Long getLong(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -272,7 +272,7 @@ public class CASObject implements ICASObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Long> getLongArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -281,28 +281,28 @@ public class CASObject implements ICASObject {
 
 
 	@Override
-	public ICASArray getCASArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+	public IQAntArray getCASArray(final String key) {
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
-		return (ICASArray) o.getObject();
+		return (IQAntArray) o.getObject();
 	}
 
 
 	@Override
-	public ICASObject getCASObject(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+	public IQAntObject getCASObject(final String key) {
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
-		return (ICASObject) o.getObject();
+		return (IQAntObject) o.getObject();
 	}
 
 
 	@Override
 	public Short getShort(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -313,7 +313,7 @@ public class CASObject implements ICASObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Short> getShortArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -323,21 +323,21 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public Integer getUnsignedByte(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
-		return DefaultCASDataSerializer.getInstance().getUnsignedByte((byte) o.getObject());
+		return DefaultQAntDataSerializer.getInstance().getUnsignedByte((byte) o.getObject());
 	}
 
 
 	@Override
 	public Collection<Integer> getUnsignedByteArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
-		final DefaultCASDataSerializer serializer = DefaultCASDataSerializer.getInstance();
+		final DefaultQAntDataSerializer serializer = DefaultQAntDataSerializer.getInstance();
 		final Collection<Integer> intCollection = new ArrayList<Integer>();
 		byte[] array;
 		for (int length = (array = (byte[]) o.getObject()).length, i = 0; i < length; ++i) {
@@ -350,7 +350,7 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public String getUtfString(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -367,7 +367,7 @@ public class CASObject implements ICASObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<String> getUtfStringArray(final String key) {
-		final CASDataWrapper o = dataHolder.get(key);
+		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
 		}
@@ -377,126 +377,126 @@ public class CASObject implements ICASObject {
 
 	@Override
 	public void putBool(final String key, final boolean value) {
-		putObj(key, value, CASDataType.BOOL);
+		putObj(key, value, QAntDataType.BOOL);
 	}
 
 
 	@Override
 	public void putBoolArray(final String key, final Collection<Boolean> value) {
-		putObj(key, value, CASDataType.BOOL_ARRAY);
+		putObj(key, value, QAntDataType.BOOL_ARRAY);
 	}
 
 
 	@Override
 	public void putByte(final String key, final byte value) {
-		putObj(key, value, CASDataType.BYTE);
+		putObj(key, value, QAntDataType.BYTE);
 	}
 
 
 	@Override
 	public void putByteArray(final String key, final byte[] value) {
-		putObj(key, value, CASDataType.BYTE_ARRAY);
+		putObj(key, value, QAntDataType.BYTE_ARRAY);
 	}
 
 
 	@Override
 	public void putDouble(final String key, final double value) {
-		putObj(key, value, CASDataType.DOUBLE);
+		putObj(key, value, QAntDataType.DOUBLE);
 	}
 
 
 	@Override
 	public void putDoubleArray(final String key, final Collection<Double> value) {
-		putObj(key, value, CASDataType.DOUBLE_ARRAY);
+		putObj(key, value, QAntDataType.DOUBLE_ARRAY);
 	}
 
 
 	@Override
 	public void putFloat(final String key, final float value) {
-		putObj(key, value, CASDataType.FLOAT);
+		putObj(key, value, QAntDataType.FLOAT);
 	}
 
 
 	@Override
 	public void putFloatArray(final String key, final Collection<Float> value) {
-		putObj(key, value, CASDataType.FLOAT_ARRAY);
+		putObj(key, value, QAntDataType.FLOAT_ARRAY);
 	}
 
 
 	@Override
 	public void putInt(final String key, final int value) {
-		putObj(key, value, CASDataType.INT);
+		putObj(key, value, QAntDataType.INT);
 	}
 
 
 	@Override
 	public void putIntArray(final String key, final Collection<Integer> value) {
-		putObj(key, value, CASDataType.INT_ARRAY);
+		putObj(key, value, QAntDataType.INT_ARRAY);
 	}
 
 
 	@Override
 	public void putLong(final String key, final long value) {
-		putObj(key, value, CASDataType.LONG);
+		putObj(key, value, QAntDataType.LONG);
 	}
 
 
 	@Override
 	public void putLongArray(final String key, final Collection<Long> value) {
-		putObj(key, value, CASDataType.LONG_ARRAY);
+		putObj(key, value, QAntDataType.LONG_ARRAY);
 	}
 
 
 	@Override
 	public void putNull(final String key) {
-		dataHolder.put(key, new CASDataWrapper(CASDataType.NULL, null));
+		dataHolder.put(key, new QAntDataWrapper(QAntDataType.NULL, null));
 	}
 
 
 	@Override
-	public void putCASArray(final String key, final ICASArray value) {
-		putObj(key, value, CASDataType.CAS_ARRAY);
+	public void putCASArray(final String key, final IQAntArray value) {
+		putObj(key, value, QAntDataType.QANT_ARRAY);
 	}
 
 
 	@Override
-	public void putCASObject(final String key, final ICASObject value) {
-		putObj(key, value, CASDataType.CAS_OBJECT);
+	public void putCASObject(final String key, final IQAntObject value) {
+		putObj(key, value, QAntDataType.QANT_OBJECT);
 	}
 
 
 	@Override
 	public void putShort(final String key, final short value) {
-		putObj(key, value, CASDataType.SHORT);
+		putObj(key, value, QAntDataType.SHORT);
 	}
 
 
 	@Override
 	public void putShortArray(final String key, final Collection<Short> value) {
-		putObj(key, value, CASDataType.SHORT_ARRAY);
+		putObj(key, value, QAntDataType.SHORT_ARRAY);
 	}
 
 
 	@Override
 	public void putUtfString(final String key, final String value) {
-		putObj(key, value, CASDataType.UTF_STRING);
+		putObj(key, value, QAntDataType.UTF_STRING);
 	}
 
 
 	@Override
 	public void putText(final String key, final String value) {
-		putObj(key, value, CASDataType.TEXT);
+		putObj(key, value, QAntDataType.TEXT);
 	}
 
 
 	@Override
 	public void putUtfStringArray(final String key, final Collection<String> value) {
-		putObj(key, value, CASDataType.UTF_STRING_ARRAY);
+		putObj(key, value, QAntDataType.UTF_STRING_ARRAY);
 	}
 
 
 	@Override
-	public void put(String key, final CASDataWrapper wrappedObject) {
+	public void put(String key, final QAntDataWrapper wrappedObject) {
 		putObj(key, wrappedObject, null);
 	}
 
@@ -507,7 +507,7 @@ public class CASObject implements ICASObject {
 	}
 
 
-	private void putObj(String key, Object value, CASDataType typeId) {
+	private void putObj(String key, Object value, QAntDataType typeId) {
 		if (key == null) {
 			throw new IllegalArgumentException("CASObject requires a non-null key for a 'put' operation!");
 		}
@@ -518,17 +518,17 @@ public class CASObject implements ICASObject {
 			throw new IllegalArgumentException(
 					"CASObject requires a non-null value! If you need to add a null use the putNull() method.");
 		}
-		if (value instanceof CASDataWrapper) {
-			dataHolder.put(key, (CASDataWrapper) value);
+		if (value instanceof QAntDataWrapper) {
+			dataHolder.put(key, (QAntDataWrapper) value);
 		} else {
-			dataHolder.put(key, new CASDataWrapper(typeId, value));
+			dataHolder.put(key, new QAntDataWrapper(typeId, value));
 		}
 	}
 
 
 	private Map<String, Object> flatten() {
 		Map<String, Object> map = new HashMap<String, Object>();
-		DefaultCASDataSerializer.getInstance().flattenObject(map, this);
+		DefaultQAntDataSerializer.getInstance().flattenObject(map, this);
 		return map;
 	}
 }
