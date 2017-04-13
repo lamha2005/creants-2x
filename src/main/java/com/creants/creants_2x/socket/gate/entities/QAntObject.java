@@ -7,6 +7,7 @@ package com.creants.creants_2x.socket.gate.entities;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,17 +29,17 @@ public class QAntObject implements IQAntObject {
 	private IQAntDataSerializer serializer;
 
 
-	public static QAntObject newFromBinaryData(final byte[] bytes) {
+	public static QAntObject newFromBinaryData(byte[] bytes) {
 		return (QAntObject) DefaultQAntDataSerializer.getInstance().binary2object(bytes);
 	}
 
 
-	public static IQAntObject newFromJsonData(final String jsonStr) {
+	public static IQAntObject newFromJsonData(String jsonStr) {
 		return DefaultQAntDataSerializer.getInstance().json2object(jsonStr);
 	}
 
 
-	public static QAntObject newFromResultSet(final ResultSet rset) throws SQLException {
+	public static QAntObject newFromResultSet(ResultSet rset) throws SQLException {
 		return DefaultQAntDataSerializer.getInstance().resultSet2object(rset);
 	}
 
@@ -454,13 +455,13 @@ public class QAntObject implements IQAntObject {
 
 
 	@Override
-	public void putCASArray(final String key, final IQAntArray value) {
+	public void putQAntArray(final String key, final IQAntArray value) {
 		putObj(key, value, QAntDataType.QANT_ARRAY);
 	}
 
 
 	@Override
-	public void putCASObject(final String key, final IQAntObject value) {
+	public void putQAntObject(final String key, final IQAntObject value) {
 		putObj(key, value, QAntDataType.QANT_OBJECT);
 	}
 
@@ -503,7 +504,7 @@ public class QAntObject implements IQAntObject {
 
 	@Override
 	public String toString() {
-		return "[CASObject, size: " + size() + "]";
+		return "[QAntObject, size: " + size() + "]";
 	}
 
 
@@ -530,5 +531,14 @@ public class QAntObject implements IQAntObject {
 		Map<String, Object> map = new HashMap<String, Object>();
 		DefaultQAntDataSerializer.getInstance().flattenObject(map, this);
 		return map;
+	}
+
+
+	public static void main(String[] args) {
+		QAntObject object = QAntObject.newInstance();
+		object.putInt("age", 15);
+		object.putUtfString("name", "Lam Ha");
+		object.putUtfString("password", "123456");
+		System.out.println(Arrays.toString(object.toBinary()) );
 	}
 }

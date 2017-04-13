@@ -2,7 +2,7 @@ package com.creants.creants_2x.core.event.handler;
 
 import java.util.List;
 
-import com.creants.creants_2x.core.api.ICoreAPI;
+import com.creants.creants_2x.core.api.IQAntAPI;
 import com.creants.creants_2x.core.util.DefaultMessageFactory;
 import com.creants.creants_2x.socket.gate.IChannelService;
 import com.creants.creants_2x.socket.gate.IMessageWriter;
@@ -18,7 +18,7 @@ import com.creants.creants_2x.socket.gate.wood.QAntUser;
 public abstract class AbstractRequestHandler implements IRequestHandler {
 	protected IChannelService channelService;
 	private IMessageWriter messageWriter;
-	protected ICoreAPI coreApi;
+	protected IQAntAPI coreApi;
 
 
 	public AbstractRequestHandler() {
@@ -51,7 +51,7 @@ public abstract class AbstractRequestHandler implements IRequestHandler {
 	}
 
 
-	public void setCoreApi(ICoreAPI coreApi) {
+	public void setCoreApi(IQAntAPI coreApi) {
 		this.coreApi = coreApi;
 	}
 

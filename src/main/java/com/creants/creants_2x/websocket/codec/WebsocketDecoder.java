@@ -18,7 +18,9 @@ public class WebsocketDecoder extends MessageToMessageDecoder<BinaryWebSocketFra
 	protected void decode(ChannelHandlerContext ctx, BinaryWebSocketFrame frame, List<Object> out) throws Exception {
 		final ByteBuf in = frame.content();
 		try {
-			out.add(QAntObject.newFromBinaryData(in.array()));
+			byte[] dst = new byte[in.capacity()];
+			in.readBytes(dst);
+			out.add(QAntObject.newFromBinaryData(dst));
 			in.clear();
 		} catch (Exception e) {
 			in.clear();

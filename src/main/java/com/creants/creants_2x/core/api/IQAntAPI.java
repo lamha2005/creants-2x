@@ -9,7 +9,7 @@ import com.creants.creants_2x.socket.gate.wood.QAntUser;
  * @author LamHa
  *
  */
-public abstract interface ICoreAPI {
+public abstract interface IQAntAPI {
 
 	/**
 	 * User thực hiện logout

@@ -17,6 +17,7 @@ public class MessageDecoder extends MessageToMessageDecoder<ByteBuf> {
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		try {
+			System.out.println("********************* DECODE ***************");
 			QAntObject message = QAntObject.newFromBinaryData(in.array());
 			// khi được add vào list sẽ remove
 			out.add(message);

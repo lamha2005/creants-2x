@@ -7,7 +7,9 @@ import com.creants.creants_2x.core.event.SystemNetworkConstant;
 import com.creants.creants_2x.core.event.handler.AbstractRequestHandler;
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.util.DefaultMessageFactory;
+import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.gate.entities.IQAntObject;
+import com.creants.creants_2x.socket.gate.entities.QAntObject;
 import com.creants.creants_2x.socket.gate.wood.ChannelService;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
 
@@ -31,19 +33,21 @@ import io.netty.channel.SimpleChannelInboundHandler;
 @Sharable
 public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 	private static final AtomicLong nextSessionId = new AtomicLong(System.currentTimeMillis());
+	private static final ChannelService channelService = ChannelService.getInstance();
 
 	private SystemHandlerManager systemHandlerManager;
-	private static final ChannelService channelService = ChannelService.getInstance();
 
 
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
 		Channel channel = ctx.channel();
-
 		synchronized (nextSessionId) {
 			long sessionId = nextSessionId.getAndIncrement();
+			QAntTracer.debug(this.getClass(), "- create session: " + sessionId);
 			QAntUser user = channelService.connect(sessionId, channel);
-			send(user, DefaultMessageFactory.createConnectMessage(sessionId));
+			QAntObject response = DefaultMessageFactory.createConnectMessage(sessionId);
+			QAntTracer.debug(this.getClass(), "- response: " + response.getDump());
+			send(user, response);
 		}
 
 	}
@@ -85,6 +89,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
 					String cmdId = message.getUtfString(SystemNetworkConstant.KEYS_COMMAND_ID);
+					QAntTracer.debug(this.getClass(), "- Send command:" + cmdId);
 				}
 			});
 		}

@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.util.AppConfig;
+import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.codec.MessageDecoder;
 import com.creants.creants_2x.socket.codec.MessageEncoder;
 import com.creants.creants_2x.socket.gate.MessageHandler;
@@ -52,6 +53,7 @@ public class SocketServer {
 
 
 	private void start() throws InterruptedException {
+		QAntTracer.debug(this.getClass(), "======================== QUEEN ANT SOCKET =====================");
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -95,6 +97,8 @@ public class SocketServer {
 				}
 			});
 
+			QAntTracer.debug(this.getClass(),
+					"======================== QUEEN ANT SOCKET STARTED =====================");
 			// chờ cho đới khi server socket đóng
 			future.channel().closeFuture().sync();
 			websocketChannelFuture.channel().closeFuture().sync();
@@ -145,6 +149,7 @@ public class SocketServer {
 
 
 	public static void main(String[] args) throws Exception {
+		System.setProperty("log4j.configurationFile", "resources/log4j2.xml");
 		PropertyConfigurator.configure("resources/log4j.properties");
 		AppConfig.init("resources/application.properties");
 		SocketServer.getInstance().start();

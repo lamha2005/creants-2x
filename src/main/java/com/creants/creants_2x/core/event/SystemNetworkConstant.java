@@ -11,11 +11,11 @@ public class SystemNetworkConstant {
 	public static final byte PROTOCOL_VERSION = 1;
 
 	/************************ SERVICE ID *********************/
-	public static final String COMMAND_ERROR = "cas_cmd_error";
-	public static final String COMMAND_USER_CONNECT = "cas_cmd_user_connect";
-	public static final String COMMAND_USER_DISCONNECT = "cas_cmd_user_disconnect";
-	public static final String COMMAND_USER_JOIN_GAME = "cas_cmd_user_join_game";
-	public static final String COMMAND_USER_LOGIN = "cas_cmd_user_login";
+	public static final String COMMAND_ERROR = "_error";
+	public static final String COMMAND_USER_CONNECT = "_userConnect";
+	public static final String COMMAND_USER_DISCONNECT = "_userDisconnect";
+	public static final String COMMAND_USER_JOIN_GAME = "_userJoinGame";
+	public static final String COMMAND_USER_LOGIN = "_userLogin";
 	public static final String COMMAND_USER_LOGOUT = "cas_cmd_user_logout";
 	public static final String COMMAND_GET_GAME_LIST = "cas_cmd_get_game_list";
 	public static final String COMMAND_USER_JOIN_ROOM = "cas_cmd_user_join_room";

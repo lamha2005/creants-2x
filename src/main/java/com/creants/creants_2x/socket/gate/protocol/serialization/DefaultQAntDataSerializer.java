@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.creants.creants_2x.socket.exception.CASCodecException;
+import com.creants.creants_2x.socket.exception.QAntCodecException;
 import com.creants.creants_2x.socket.gate.entities.QAntArray;
 import com.creants.creants_2x.socket.gate.entities.QAntArrayLite;
 import com.creants.creants_2x.socket.gate.entities.QAntDataType;
@@ -83,8 +83,8 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 		IQAntArray casArray = QAntArray.newInstance();
 		byte headerBuffer = buffer.get();
 		if (headerBuffer != QAntDataType.QANT_ARRAY.getTypeID()) {
-			throw new IllegalStateException(
-					"Invalid CASDataType. Expected: " + QAntDataType.QANT_ARRAY.getTypeID() + ", found: " + headerBuffer);
+			throw new IllegalStateException("Invalid CASDataType. Expected: " + QAntDataType.QANT_ARRAY.getTypeID()
+					+ ", found: " + headerBuffer);
 		}
 
 		short size = buffer.getShort();
@@ -333,7 +333,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 		for (String key : keys) {
 			QAntDataWrapper wrapper = object.get(key);
 			Object dataObj = wrapper.getObject();
-			buffer = encodeCASObjectKey(buffer, key);
+			buffer = encodeQAntObjectKey(buffer, key);
 			buffer = encodeObject(buffer, wrapper.getTypeId(), dataObj);
 		}
 		int pos = buffer.position();
@@ -415,7 +415,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper decodeObject(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper decodeObject(ByteBuffer buffer) throws QAntCodecException {
 		QAntDataWrapper decodedObject = null;
 		byte headerByte = buffer.get();
 		if (headerByte == QAntDataType.NULL.getTypeID()) {
@@ -459,7 +459,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 			decodedObject = new QAntDataWrapper(QAntDataType.QANT_ARRAY, decodeCASArray(buffer));
 		} else {
 			if (headerByte != QAntDataType.QANT_OBJECT.getTypeID()) {
-				throw new CASCodecException("Unknow CASDataType ID: " + headerByte);
+				throw new QAntCodecException("Unknow CASDataType ID: " + headerByte);
 			}
 			buffer.position(buffer.position() - 1);
 			IQAntObject CASObj = decodeCASObject(buffer);
@@ -573,14 +573,14 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_BOOL(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_BOOL(ByteBuffer buffer) throws QAntCodecException {
 		byte boolByte = buffer.get();
 		Boolean bool = null;
 		if (boolByte == 0) {
 			bool = new Boolean(false);
 		} else {
 			if (boolByte != 1) {
-				throw new CASCodecException("Error decoding Bool type. Illegal value: " + bool);
+				throw new QAntCodecException("Error decoding Bool type. Illegal value: " + bool);
 			}
 			bool = new Boolean(true);
 		}
@@ -624,10 +624,10 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_UTF_STRING(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_UTF_STRING(ByteBuffer buffer) throws QAntCodecException {
 		short strLen = buffer.getShort();
 		if (strLen < 0) {
-			throw new CASCodecException("Error decoding UtfString. Negative size: " + strLen);
+			throw new QAntCodecException("Error decoding UtfString. Negative size: " + strLen);
 		}
 		byte[] strData = new byte[strLen];
 		buffer.get(strData, 0, strLen);
@@ -636,10 +636,10 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_TEXT(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_TEXT(ByteBuffer buffer) throws QAntCodecException {
 		int strLen = buffer.getInt();
 		if (strLen < 0) {
-			throw new CASCodecException("Error decoding UtfString. Negative size: " + strLen);
+			throw new QAntCodecException("Error decoding UtfString. Negative size: " + strLen);
 		}
 		byte[] strData = new byte[strLen];
 		buffer.get(strData, 0, strLen);
@@ -648,7 +648,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_BOOL_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_BOOL_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Boolean> array = new ArrayList<Boolean>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -657,7 +657,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 				array.add(false);
 			} else {
 				if (boolData != 1) {
-					throw new CASCodecException("Error decoding BoolArray. Invalid bool value: " + boolData);
+					throw new QAntCodecException("Error decoding BoolArray. Invalid bool value: " + boolData);
 				}
 				array.add(true);
 			}
@@ -666,10 +666,10 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_BYTE_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_BYTE_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		int arraySize = buffer.getInt();
 		if (arraySize < 0) {
-			throw new CASCodecException("Error decoding typed array size. Negative size: " + arraySize);
+			throw new QAntCodecException("Error decoding typed array size. Negative size: " + arraySize);
 		}
 		byte[] byteData = new byte[arraySize];
 		buffer.get(byteData, 0, arraySize);
@@ -677,7 +677,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_SHORT_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_SHORT_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Short> array = new ArrayList<Short>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -688,7 +688,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_INT_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_INT_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Integer> array = new ArrayList<Integer>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -700,7 +700,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_LONG_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_LONG_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Long> array = new ArrayList<Long>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -711,7 +711,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_FLOAT_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_FLOAT_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Float> array = new ArrayList<Float>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -722,7 +722,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_DOUBLE_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_DOUBLE_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<Double> array = new ArrayList<Double>();
 		for (int j = 0; j < arraySize; ++j) {
@@ -733,13 +733,13 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private QAntDataWrapper binDecode_UTF_STRING_ARRAY(ByteBuffer buffer) throws CASCodecException {
+	private QAntDataWrapper binDecode_UTF_STRING_ARRAY(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = getTypeArraySize(buffer);
 		List<String> array = new ArrayList<String>();
 		for (int j = 0; j < arraySize; ++j) {
 			short strLen = buffer.getShort();
 			if (strLen < 0) {
-				throw new CASCodecException(
+				throw new QAntCodecException(
 						"Error decoding UtfStringArray element. Element has negative size: " + strLen);
 			}
 			byte[] strData = new byte[strLen];
@@ -750,10 +750,10 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private short getTypeArraySize(ByteBuffer buffer) throws CASCodecException {
+	private short getTypeArraySize(ByteBuffer buffer) throws QAntCodecException {
 		short arraySize = buffer.getShort();
 		if (arraySize < 0) {
-			throw new CASCodecException("Error decoding typed array size. Negative size: " + arraySize);
+			throw new QAntCodecException("Error decoding typed array size. Negative size: " + arraySize);
 		}
 		return arraySize;
 	}
@@ -936,7 +936,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	}
 
 
-	private ByteBuffer encodeCASObjectKey(ByteBuffer buffer, String value) {
+	private ByteBuffer encodeQAntObjectKey(ByteBuffer buffer, String value) {
 		ByteBuffer buf = ByteBuffer.allocate(2 + value.length());
 		buf.putShort((short) value.length());
 		buf.put(value.getBytes());

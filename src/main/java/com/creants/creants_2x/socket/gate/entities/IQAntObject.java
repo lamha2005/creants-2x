@@ -169,9 +169,9 @@ public interface IQAntObject {
 	void putUtfStringArray(String key, Collection<String> value);
 
 
-	void putCASArray(String key, IQAntArray value);
+	void putQAntArray(String key, IQAntArray value);
 
 
-	void putCASObject(String key, IQAntObject value);
+	void putQAntObject(String key, IQAntObject value);
 
 }
