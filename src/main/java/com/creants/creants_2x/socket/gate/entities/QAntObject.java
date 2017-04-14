@@ -537,8 +537,11 @@ public class QAntObject implements IQAntObject {
 	public static void main(String[] args) {
 		QAntObject object = QAntObject.newInstance();
 		object.putInt("age", 15);
-		object.putUtfString("name", "Lam Ha");
-		object.putUtfString("password", "123456");
-		System.out.println(Arrays.toString(object.toBinary()) );
+        object.putUtfString("name", "Lam Ha");
+        object.putUtfString("password", "123456");
+        object.putLong("money",1000000);
+		byte[] binary = object.toBinary();
+		System.out.println(binary.length);
+		System.out.println(Arrays.toString(binary) );
 	}
 }

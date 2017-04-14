@@ -27,8 +27,9 @@ public class SystemNetworkConstant {
 	public static final String COMMAND_UNKNOW = "cas_cmd_unknow";
 
 	/************************ KEY ****************************/
-	public static final String KEYR_ERROR = "cas_error_code";
-	public static final String KEYS_COMMAND_ID = "cas_command_id";
+	public static final String KEYR_ERROR = "_errorCode";
+	public static final String KEYS_COMMAND_ID = "_commandId";
+	public static final String KEYS_TOKEN = "_token";
 	public static final String KEYS_ERROR_COMMAND_ID = "cas_error_command_id";
 	public static final String KEYB_PROTOCOL_VERSION = "cas_protocol_version";
 	public static final String KEYS_MESSAGE = "cas_message";
@@ -58,7 +59,6 @@ public class SystemNetworkConstant {
 
 	public static final short KEYI_ROOM_ID = 0x19;
 	public static final short KEYS_ROOM_NAME = 0x1A;
-	public static final short KEYS_TOKEN = 0x1B;
 	public static final short KEYR_COMMAND_ID = 0x1C;
 	public static final short KEYB_GAME_STATE = 0x1E;
 

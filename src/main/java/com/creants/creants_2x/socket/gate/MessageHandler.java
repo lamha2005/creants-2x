@@ -45,9 +45,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 			long sessionId = nextSessionId.getAndIncrement();
 			QAntTracer.debug(this.getClass(), "- create session: " + sessionId);
 			QAntUser user = channelService.connect(sessionId, channel);
-			QAntObject response = DefaultMessageFactory.createConnectMessage(sessionId);
-			QAntTracer.debug(this.getClass(), "- response: " + response.getDump());
-			send(user, response);
+			send(user, DefaultMessageFactory.createConnectMessage(sessionId));
 		}
 
 	}
@@ -66,12 +64,21 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 		Channel channel = ctx.channel();
 		QAntUser user = channelService.getUser(channel);
 
-		String commandId = message.getUtfString(SystemNetworkConstant.KEYS_COMMAND_ID);
-		AbstractRequestHandler handler = systemHandlerManager.getHandler(commandId);
-		if (handler != null) {
-			handler.perform(user, message);
-		} else {
-		}
+		QAntObject response = QAntObject.newInstance();
+		response.putUtfString("_commandId", SystemNetworkConstant.COMMAND_USER_LOGIN);
+		response.putUtfString("_response", "hello");
+		response.putLong("_money", 1005435430000L);
+		System.out.println(response.getDump());
+		
+		send(user, response);
+		// String commandId =
+		// message.getUtfString(SystemNetworkConstant.KEYS_COMMAND_ID);
+		// AbstractRequestHandler handler =
+		// systemHandlerManager.getHandler(commandId);
+		// if (handler != null) {
+		// handler.perform(user, message);
+		// } else {
+		// }
 	}
 
 

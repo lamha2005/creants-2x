@@ -115,12 +115,12 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 		ByteBuffer buffer = ByteBuffer.allocate(data.length);
 		buffer.put(data);
 		buffer.flip();
-		return decodeCASObject(buffer);
+		return decodeQAntObject(buffer);
 	}
 
 
-	private IQAntObject decodeCASObject(ByteBuffer buffer) {
-		IQAntObject casObject = QAntObject.newInstance();
+	private IQAntObject decodeQAntObject(ByteBuffer buffer) {
+		IQAntObject qAntObject = QAntObject.newInstance();
 		byte headerBuffer = buffer.get();
 		if (headerBuffer != QAntDataType.QANT_OBJECT.getTypeID()) {
 			throw new IllegalStateException("Invalid CASDataType. Expected: " + QAntDataType.QANT_OBJECT.getTypeID()
@@ -128,7 +128,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 		}
 		short size = buffer.getShort();
 		if (size < 0) {
-			throw new IllegalStateException("Can't decode CASObject. Size is negative = " + size);
+			throw new IllegalStateException("Can't decode QAntObject. Size is negative = " + size);
 		}
 		try {
 			for (int i = 0; i < size; ++i) {
@@ -143,12 +143,12 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 				if (decodedObject == null) {
 					throw new IllegalStateException("Could not decode value for key: " + keyData);
 				}
-				casObject.put(key, decodedObject);
+				qAntObject.put(key, decodedObject);
 			}
 		} catch (Exception codecError) {
 			throw new IllegalArgumentException(codecError.getMessage());
 		}
-		return casObject;
+		return qAntObject;
 	}
 
 
@@ -462,7 +462,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 				throw new QAntCodecException("Unknow CASDataType ID: " + headerByte);
 			}
 			buffer.position(buffer.position() - 1);
-			IQAntObject CASObj = decodeCASObject(buffer);
+			IQAntObject CASObj = decodeQAntObject(buffer);
 			QAntDataType type = QAntDataType.QANT_OBJECT;
 			Object finalCASObj = CASObj;
 			// if (CASObj.containsKey(CLASS_MARKER_KEY) &&

@@ -1,5 +1,6 @@
 /**
  * Created by Lamhm on 4/13/2017.
+ * https://www.npmjs.com/package/bytebuffer
  */
 QANT2X = {};
 QANT2X.DataType = {
@@ -42,7 +43,92 @@ QANT2X.QAntDataSerializer = {
             this.encodeQAntObjectKey(dataStream, key);
             this.encodeObject(dataStream, wrapper.getType(), dataObj);
         }
+
         return dataStream.getBytes();
+    },
+
+    binary2object: function (data) {
+        if (data.length < 3) {
+            console.log("[QANT2X_API] [ERROR] Can't decode an CASObject. Byte data is insufficient. Size: " + data.length + " bytes");
+            return null;
+        }
+        var dataStream = new DataStream(data.length, data);
+        return this.decodeQAntObject(dataStream);
+    },
+
+    decodeQAntObject: function (buffer) {
+        var obj = new QAntObject();
+        var dataType = buffer.readByte();
+        if (dataType != QANT2X.DataType.QANT_OBJECT) {
+            console.log("[QANT2X_API] [ERROR] Invalid CASDataType. Expected: " + QANT2X.DataType.QANT_OBJECT
+            + ", found: " + dataType);
+            return null;
+        }
+        var size = buffer.readShort();
+        if (size < 0) {
+            console.log("[QANT2X_API] [ERROR] Can't decode QAntObject. Size is negative = " + size);
+            return null;
+        }
+
+        for (var i = 0; i < size; ++i) {
+            var keySize = buffer.readShort();
+            if (keySize < 0 || keySize > 255) {
+                console.log("[QANT2X_API] [ERROR] Invalid CASObject key length. Found = " + keySize);
+                return null;
+            }
+
+            var keyData = buffer.readBytes(keySize);
+            var key = String.fromCharCode.apply(String, keyData);
+            var decodedObject = this.decodeObject(buffer);
+            if (decodedObject == null) {
+                console.log("[QANT2X_API] [ERROR] Could not decode value for key:  " + keyData);
+                return null;
+            }
+            obj.put(key, decodedObject);
+        }
+
+        return obj;
+
+    },
+
+    bytes2String: function (bytes) {
+        return String.fromCharCode.apply(String, bytes);
+    },
+
+    decodeObject: function (buffer) {
+        var decodedObject;
+        var dataType = buffer.readByte();
+        if (dataType == QANT2X.DataType.NULL) {
+
+        } else if (dataType == QANT2X.DataType.UTF_STRING) {
+            decodedObject = this.binDecode_UTF_STRING(buffer);
+        } else if (dataType == QANT2X.DataType.LONG) {
+            decodedObject = this.binDecode_LONG(buffer);
+        } else if (dataType == QANT2X.DataType.INT) {
+            decodedObject = this.binDecode_INT(buffer);
+        }
+
+        return decodedObject;
+    },
+
+    binDecode_INT: function (buffer) {
+        return new QAntDataWrapper(QANT2X.DataType.INT, buffer.readInt());
+    },
+
+
+    binDecode_LONG: function (buffer) {
+        return new QAntDataWrapper(QANT2X.DataType.LONG, buffer.readLong());
+    },
+
+    binDecode_UTF_STRING: function (buffer) {
+        var strLen = buffer.readShort();
+        if (strLen < 0) {
+            console.log("[QANT2X_API] [ERROR] Error decoding UtfString. Negative size: " + strLen);
+            return null;
+        }
+
+        var strData = buffer.readBytes(strLen);
+        return new QAntDataWrapper(QANT2X.DataType.UTF_STRING, this.bytes2String(strData));
     },
 
     encodeQAntObjectKey: function (dataStream, value) {
@@ -61,7 +147,7 @@ QANT2X.QAntDataSerializer = {
                 this.binEncode_UTF_STRING(dataStream, object);
                 break;
             case QANT2X.DataType.LONG:
-                this.binEncode_LONG(dataStream, object);
+                console.log("************** NOT SUPPORT LONG TYPE *********************")
                 break;
 
         }
@@ -72,7 +158,7 @@ QANT2X.QAntDataSerializer = {
         dataStream.writeInt(value);
     },
 
-    binEncode_LONG: function(dataStream, value){
+    binEncode_LONG: function (dataStream, value) {
         dataStream.writeByte(QANT2X.DataType.LONG);
         dataStream.writein
     },
@@ -82,6 +168,7 @@ QANT2X.QAntDataSerializer = {
         dataStream.writeShort(value.length);
         dataStream.writeBytes(this.string2Bin(value));
     },
+
 
     string2Bin: function (str) {
         var result = [];
@@ -139,6 +226,10 @@ QAntObject.prototype.putObj = function (key, value, dataType) {
 
 }
 
+QAntObject.newFromBinaryData = function (bytes) {
+    return QANT2X.QAntDataSerializer.binary2object(bytes);
+}
+
 QAntObject.prototype.putBoolArray = function (key, value) {
     this.putObj(key, value, QANT2X.DataType.BOOL_ARRAY);
 }
@@ -161,10 +252,6 @@ QAntObject.prototype.putDouble = function (key, value) {
 
 QAntObject.prototype.putInt = function (key, value) {
     this.putObj(key, value, QANT2X.DataType.INT);
-}
-
-QAntObject.prototype.putLong = function (key, value) {
-    this.putObj(key, value, QANT2X.DataType.LONG);
 }
 
 QAntObject.prototype.putNull = function (key) {
