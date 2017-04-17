@@ -1,17 +1,19 @@
 package com.creants.creants_2x.socket.io;
 
+import com.creants.creants_2x.socket.gate.entities.IQAntObject;
+
 /**
  * @author LamHa
  *
  */
 public interface IEngineMessage {
-	Object getId();
+	short getId();
 
-	void setId(Object id);
+	void setId(short id);
 
-	Object getContent();
+	IQAntObject getContent();
 
-	void setContent(Object qAntObject);
+	void setContent(IQAntObject qAntObject);
 
 	Object getAttribute(String attr);
 

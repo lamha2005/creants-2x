@@ -1,6 +1,5 @@
 package com.creants.creants_2x.socket.io;
 
-import com.creants.creants_2x.socket.data.TransportType;
 import com.creants.creants_2x.socket.gate.IQAntUser;
 
 /**
@@ -8,10 +7,6 @@ import com.creants.creants_2x.socket.gate.IQAntUser;
  *
  */
 public interface IRequest extends IEngineMessage {
-	TransportType getTransportType();
-
-	void setTransportType(final TransportType p0);
-
 	IQAntUser getSender();
 
 	void setSender(IQAntUser sender);

@@ -112,7 +112,7 @@ public interface IQAntObject {
 	IQAntArray getCASArray(String key);
 
 
-	IQAntObject getCASObject(String key);
+	IQAntObject getQAntObject(String key);
 
 
 	void putNull(String key);

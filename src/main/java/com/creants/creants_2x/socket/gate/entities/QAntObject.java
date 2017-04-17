@@ -292,7 +292,7 @@ public class QAntObject implements IQAntObject {
 
 
 	@Override
-	public IQAntObject getCASObject(final String key) {
+	public IQAntObject getQAntObject(final String key) {
 		final QAntDataWrapper o = dataHolder.get(key);
 		if (o == null) {
 			return null;
