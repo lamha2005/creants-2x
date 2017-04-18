@@ -10,6 +10,7 @@ import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.codec.MessageDecoder;
 import com.creants.creants_2x.socket.codec.MessageEncoder;
 import com.creants.creants_2x.socket.gate.MessageHandler;
+import com.creants.creants_2x.socket.managers.UserManager;
 import com.creants.creants_2x.websocket.codec.WebsocketDecoder;
 import com.creants.creants_2x.websocket.codec.WebsocketEncoder;
 import com.creants.creants_2x.websocket.gate.HttpRequestHandler;
@@ -32,23 +33,24 @@ import io.netty.util.concurrent.GenericFutureListener;
  * @author LamHM
  *
  */
-public class SocketServer {
-	private static SocketServer instance;
-	private MessageHandler messageHandler = new MessageHandler();
+public class QAntServer {
+	private static QAntServer instance;
+	private MessageHandler messageHandler;
 	private SystemHandlerManager systemHandlerManager;
 
 
-	public static SocketServer getInstance() {
+	public static QAntServer getInstance() {
 		if (instance == null) {
-			instance = new SocketServer();
+			System.out.println("*********** NULL INSTANCE *****************");
+			instance = new QAntServer();
 		}
 
 		return instance;
 	}
 
 
-	private SocketServer() {
-
+	private QAntServer() {
+		messageHandler = new MessageHandler();
 	}
 
 
@@ -138,6 +140,11 @@ public class SocketServer {
 	}
 
 
+	public UserManager getUserManager() {
+		return null;
+	}
+
+
 	public SystemHandlerManager getSystemHandlerManager() {
 		return systemHandlerManager;
 	}
@@ -152,6 +159,6 @@ public class SocketServer {
 		System.setProperty("log4j.configurationFile", "resources/log4j2.xml");
 		PropertyConfigurator.configure("resources/log4j.properties");
 		AppConfig.init("resources/application.properties");
-		SocketServer.getInstance().start();
+		QAntServer.getInstance().start();
 	}
 }

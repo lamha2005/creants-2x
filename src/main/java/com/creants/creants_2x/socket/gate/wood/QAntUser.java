@@ -4,13 +4,15 @@ import java.util.Iterator;
 
 import com.creants.creants_2x.socket.gate.IQAntUser;
 
+import io.netty.channel.Channel;
+
 /**
  * @author LamHa
  *
  */
 public class QAntUser implements IQAntUser {
 	private long sessionId;
-	private long userId;
+	private int userId;
 	private long createTime;
 	private String userName;
 	private String name;
@@ -21,6 +23,7 @@ public class QAntUser implements IQAntUser {
 	private long loginMoney;
 	private long loginTime;
 	private byte currentGameId = -1;
+	private Channel channel;
 
 
 	public QAntUser() {
@@ -37,6 +40,11 @@ public class QAntUser implements IQAntUser {
 	@Override
 	public Iterator<Object> getAttributeKeys() {
 		return null;
+	}
+
+
+	public boolean isNPC() {
+		return false;
 	}
 
 
@@ -58,6 +66,16 @@ public class QAntUser implements IQAntUser {
 
 	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
+	}
+
+
+	public Channel getChannel() {
+		return channel;
+	}
+
+
+	public void setChannel(Channel channel) {
+		this.channel = channel;
 	}
 
 
@@ -107,7 +125,7 @@ public class QAntUser implements IQAntUser {
 
 
 	@Override
-	public long getUserId() {
+	public int getUserId() {
 		return userId;
 	}
 

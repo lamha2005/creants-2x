@@ -3,10 +3,10 @@ package com.creants.creants_2x.socket.gate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.creants.creants_2x.core.controllers.DefaultControllerManager;
 import com.creants.creants_2x.core.controllers.IController;
 import com.creants.creants_2x.core.controllers.IControllerManager;
 import com.creants.creants_2x.core.event.SystemNetworkConstant;
-import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.util.DefaultMessageFactory;
 import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.gate.entities.IQAntObject;
@@ -28,7 +28,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * là stateless).<br>
  * inbound là data từ ứng dụng đến server(remote peer)<br>
  * outbound là data từ server(remote peer) đến ứng dụng (ví dụ như hành động
- * write)
+ * write) com.smartfoxserver.bitswarm.io.protocols.AbstractProtocolCodec
  * 
  * @author LamHa
  */
@@ -41,12 +41,13 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 	private static final AtomicLong nextSessionId = new AtomicLong(System.currentTimeMillis());
 	private static final ChannelService channelService = ChannelService.getInstance();
 
-	private SystemHandlerManager systemHandlerManager;
 	protected final IControllerManager controllerManager;
+
 
 	public MessageHandler() {
 		controllerManager = getControllerManager();
 	}
+
 
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
@@ -60,9 +61,16 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 
 	}
 
+
+	/**
+	 * @return
+	 */
 	private IControllerManager getControllerManager() {
-		return null;
+		DefaultControllerManager controllerManager = new DefaultControllerManager();
+		controllerManager.init(null);
+		return controllerManager;
 	}
+
 
 	/*
 	 * Chú ý khi xử lý message là có nhiều thread xử lý IO, do đó cố gắng không
@@ -75,7 +83,6 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 	@Override
 	protected void channelRead0(final ChannelHandlerContext ctx, final IQAntObject message) throws Exception {
 		Channel channel = ctx.channel();
-		QAntUser user = channelService.getUser(channel);
 		if (message.isNull(CONTROLLER_ID)) {
 			throw new IllegalStateException("Request rejected: No Controller ID in request!");
 		}
@@ -91,21 +98,23 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 		IRequest request = new Request();
 		request.setId(message.getShort(ACTION_ID));
 		request.setContent(message.getQAntObject(PARAM_ID));
-		request.setSender(user);
+		request.setSender(channel);
 
 		this.dispatchRequestToController(request, message.getByte(CONTROLLER_ID));
 
 	}
 
+
 	protected void dispatchRequestToController(IRequest request, byte controllerId) {
-		IController controller = controllerManager.getControllerById(controllerId);
 		try {
+			IController controller = controllerManager.getControllerById(controllerId);
 			controller.enqueueRequest(request);
 		} catch (Exception err) {
 			QAntTracer.warn(this.getClass(), "Can't handle this request! The related controller is not found: "
 					+ controllerId + ", Request: " + request);
 		}
 	}
+
 
 	/**
 	 * @param receiver
@@ -127,6 +136,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 		}
 	}
 
+
 	/**
 	 * Send cho nhóm user
 	 * 
@@ -140,6 +150,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 		}
 	}
 
+
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		// flush tất cả những message trước đó (những message đang pending) đến
@@ -147,23 +158,22 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 		// ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
 	}
 
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		cause.printStackTrace();
 		ctx.close();
 	}
 
+
 	@Override
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 	}
 
+
 	public void removeUser(QAntUser user) {
 		channelService.getChannel(user.getSessionId()).close();
 		channelService.disconnect(user);
-	}
-
-	public void setSystemHandlerManager(SystemHandlerManager systemHandlerManager) {
-		this.systemHandlerManager = systemHandlerManager;
 	}
 
 }

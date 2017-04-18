@@ -2,6 +2,10 @@ package com.creants.creants_2x.core.controllers;
 
 import com.creants.creants_2x.socket.io.IRequest;
 
+/**
+ * @author LamHM
+ *
+ */
 public interface IControllerCommand {
 	boolean validate(IRequest request) throws Exception;
 

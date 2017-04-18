@@ -35,7 +35,7 @@ public interface IQAntUser {
 	String getScreenSize();
 
 
-	long getUserId();
+	int getUserId();
 
 
 	String getUserName();

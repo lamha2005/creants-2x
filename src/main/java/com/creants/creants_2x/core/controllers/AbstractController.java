@@ -7,8 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import org.slf4j.Logger;
-
 import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.gate.wood.RequestComparator;
 import com.creants.creants_2x.socket.io.IRequest;
@@ -27,6 +25,7 @@ public abstract class AbstractController implements IController, Runnable {
 	protected volatile boolean isActive;
 	private volatile int threadId;
 
+
 	public AbstractController() {
 		threadPoolSize = -1;
 		maxQueueSize = -1;
@@ -34,116 +33,132 @@ public abstract class AbstractController implements IController, Runnable {
 		threadId = 1;
 	}
 
-	@Override
-	public void enqueueRequest(final IRequest request) throws Exception {
-		if (this.requestQueue.size() >= this.maxQueueSize) {
-			throw new Exception("Full queue");
-		}
-		this.requestQueue.add(request);
-	}
 
 	@Override
-	public void init(final Object o) {
+	public void enqueueRequest(IRequest request) throws Exception {
+		if (requestQueue.size() >= maxQueueSize) {
+			throw new Exception("Full queue");
+		}
+
+		requestQueue.add(request);
+	}
+
+
+	@Override
+	public void init(Object o) {
 		if (isActive) {
 			throw new IllegalArgumentException("Object is already initialized. Destroy it first!");
 		}
 		if (threadPoolSize < 1) {
-			throw new IllegalArgumentException("Illegal value for a thread pool size: " + this.threadPoolSize);
+			throw new IllegalArgumentException("Illegal value for a thread pool size: " + threadPoolSize);
 		}
 		if (maxQueueSize < 1) {
-			throw new IllegalArgumentException("Illegal value for max queue size: " + this.maxQueueSize);
+			throw new IllegalArgumentException("Illegal value for max queue size: " + maxQueueSize);
 		}
 
-		final Comparator<IRequest> requestComparator = new RequestComparator();
+		Comparator<IRequest> requestComparator = new RequestComparator();
 		requestQueue = new PriorityBlockingQueue<IRequest>(50, requestComparator);
 		threadPool = Executors.newFixedThreadPool(threadPoolSize);
 		isActive = true;
 		initThreadPool();
 		QAntTracer.info(this.getClass(), String.format("Controller started: %s -- Queue: %s/%s",
-				this.getClass().getName(), getQueueSize(), this.getMaxQueueSize()));
+				this.getClass().getName(), getQueueSize(), getMaxQueueSize()));
 	}
+
 
 	@Override
 	public void destroy(final Object o) {
-		this.isActive = false;
-		final List<Runnable> leftOvers = this.threadPool.shutdownNow();
-		this.logger
-				.info("Controller stopping: " + this.getClass().getName() + ", Unprocessed tasks: " + leftOvers.size());
+		isActive = false;
+		List<Runnable> leftOvers = threadPool.shutdownNow();
+		QAntTracer.info(this.getClass(),
+				"Controller stopping: " + this.getClass().getName() + ", Unprocessed tasks: " + leftOvers.size());
 	}
+
 
 	@Override
 	public void handleMessage(final Object message) {
 	}
 
+
 	@Override
 	public void run() {
-		Thread.currentThread().setName(String.valueOf(this.getClass().getName()) + "-" + this.threadId++);
-		while (this.isActive) {
+		Thread.currentThread().setName(String.valueOf(this.getClass().getName()) + "-" + threadId++);
+		while (isActive) {
 			try {
-				final IRequest request = this.requestQueue.take();
-				this.processRequest(request);
+				processRequest(requestQueue.take());
 			} catch (InterruptedException e) {
-				this.isActive = false;
-				this.logger.warn("Controller main loop was interrupted");
+				isActive = false;
+				QAntTracer.warn(AbstractController.class, "Controller main loop was interrupted");
 			} catch (Throwable t) {
 				QAntTracer.error(AbstractController.class, "Runable fail!");
 			}
 		}
-		this.bootLogger.info("Controller worker threads stopped: " + this.getClass().getName());
+		QAntTracer.info(AbstractController.class, "Controller worker threads stopped: " + this.getClass().getName());
 	}
 
-	public abstract void processRequest(final IRequest p0) throws Exception;
+
+	public abstract void processRequest(IRequest request) throws Exception;
+
 
 	@Override
 	public Object getId() {
-		return this.id;
+		return id;
 	}
+
 
 	@Override
 	public void setId(final Object id) {
 		this.id = id;
 	}
 
+
 	@Override
 	public String getName() {
 		return this.name;
 	}
 
+
 	@Override
-	public void setName(final String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
-	@Override
-	public int getThreadPoolSize() {
-		return this.threadPoolSize;
-	}
 
 	@Override
-	public void setThreadPoolSize(final int threadPoolSize) {
+	public int getThreadPoolSize() {
+		return threadPoolSize;
+	}
+
+
+	@Override
+	public void setThreadPoolSize(int threadPoolSize) {
 		if (this.threadPoolSize < 1) {
 			this.threadPoolSize = threadPoolSize;
 		}
 	}
 
+
 	@Override
 	public int getQueueSize() {
-		return this.requestQueue.size();
+		return requestQueue.size();
 	}
+
 
 	@Override
 	public int getMaxQueueSize() {
-		return this.maxQueueSize;
+		return maxQueueSize;
 	}
 
+
 	@Override
-	public void setMaxQueueSize(final int maxQueueSize) {
+	public void setMaxQueueSize(int maxQueueSize) {
 		this.maxQueueSize = maxQueueSize;
 	}
 
+
 	protected void initThreadPool() {
-		for (int j = 0; j < this.threadPoolSize; ++j) {
-			this.threadPool.execute(this);
+		for (int j = 0; j < threadPoolSize; ++j) {
+			threadPool.execute(this);
 		}
 	}
 }
