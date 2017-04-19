@@ -36,7 +36,6 @@ public class SystemController extends AbstractController {
 
 
 	public void init(final Object o) {
-		System.out.println("********************* init system controller **************");
 		super.init(o);
 		commandCache = new ConcurrentHashMap<Object, IControllerCommand>();
 	}
@@ -56,7 +55,7 @@ public class SystemController extends AbstractController {
 			try {
 				command.execute(request);
 			} catch (Exception re) {
-				final String msg = re.getMessage();
+				String msg = re.getMessage();
 				if (msg != null) {
 					QAntTracer.warn(this.getClass(), msg);
 				}
@@ -80,6 +79,7 @@ public class SystemController extends AbstractController {
 		} else {
 			QAntTracer.error(this.getClass(), "Cannot find a controller command for request ID: " + reqId);
 		}
+
 		return command;
 	}
 

@@ -15,12 +15,9 @@ public class ExtensionController extends AbstractController {
 	public static final String KEY_EXT_CMD = "c";
 	public static final String KEY_EXT_PARAMS = "p";
 	public static final String KEY_ROOMID = "r";
-	private QAntServer qant;
 
 
 	public ExtensionController() {
-		System.out.println("**************** GET INSTANCE ******************");
-		qant = QAntServer.getInstance();
 	}
 
 
@@ -28,7 +25,7 @@ public class ExtensionController extends AbstractController {
 	public void processRequest(IRequest request) throws Exception {
 		QAntTracer.debug(this.getClass(), request.toString());
 		long t1 = System.nanoTime();
-		QAntUser sender = qant.getUserManager().getUserByChannel(request.getSender());
+		QAntUser sender = QAntServer.getInstance().getUserManager().getUserByChannel(request.getSender());
 		if (sender == null) {
 			throw new SFSExtensionException("Extension Request refused. Sender is not a User: " + request.getSender());
 		}

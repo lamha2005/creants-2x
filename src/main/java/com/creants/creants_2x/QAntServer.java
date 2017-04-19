@@ -41,7 +41,6 @@ public class QAntServer {
 
 	public static QAntServer getInstance() {
 		if (instance == null) {
-			System.out.println("*********** NULL INSTANCE *****************");
 			instance = new QAntServer();
 		}
 

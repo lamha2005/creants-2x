@@ -536,12 +536,21 @@ public class QAntObject implements IQAntObject {
 
 	public static void main(String[] args) {
 		QAntObject object = QAntObject.newInstance();
-		object.putInt("age", 15);
-		object.putUtfString("name", "Lam Ha");
-		object.putUtfString("password", "123456");
-		object.putLong("money", 1000000);
+		object.putByte("c", (byte) 0);
+		object.putShort("a", (short) 1);
+
+		QAntObject param = new QAntObject();
+		param.putUtfString("_token",
+				"eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjIyIiwiZXhwIjoxNDkzNDUwNTQ4LCJpc3MiOiJhdXRoMCIsInR0bCI6ODY0MDAwMDAwfQ.EzdTCrV-jLn9K4WXiWctLuxHDY4A-s_N9zhNB5fiFSA");
+		object.putQAntObject("p", param);
+
 		byte[] binary = object.toBinary();
 		System.out.println(binary.length);
 		System.out.println(Arrays.toString(binary));
+
+		QAntObject decode = QAntObject.newFromBinaryData(binary);
+		IQAntObject qAntObject = decode.getQAntObject("p");
+		System.out.println(qAntObject.getUtfString("_token"));
+
 	}
 }

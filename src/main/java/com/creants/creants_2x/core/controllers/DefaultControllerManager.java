@@ -15,8 +15,15 @@ public class DefaultControllerManager implements IControllerManager {
 
 	public DefaultControllerManager() {
 		controllers = new ConcurrentHashMap<Byte, IController>();
-		controllers.put((byte) 0, new SystemController());
-		controllers.put((byte) 1, new ExtensionController());
+		SystemController systemController = new SystemController();
+		systemController.setThreadPoolSize(1);
+		systemController.setMaxQueueSize(50);
+		ExtensionController extensionController = new ExtensionController();
+		extensionController.setThreadPoolSize(1);
+		extensionController.setMaxQueueSize(50);
+
+		controllers.put((byte) 0, systemController);
+		controllers.put((byte) 1, extensionController);
 	}
 
 	// private void configureControllers() throws ClassNotFoundException,

@@ -7,9 +7,12 @@ import com.creants.creants_2x.socket.io.IRequest;
  *
  */
 public interface IControllerCommand {
+	void execute(IRequest request) throws Exception;
+
+
 	boolean validate(IRequest request) throws Exception;
+
 
 	Object preProcess(IRequest request) throws Exception;
 
-	void execute(IRequest request) throws Exception;
 }
