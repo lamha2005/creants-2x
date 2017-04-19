@@ -74,7 +74,8 @@ public class SystemController extends AbstractController {
 				commandCache.put(reqId, command);
 			} catch (Exception err) {
 				QAntTracer.error(this.getClass(),
-						"Could not dynamically instantiate class: " + className + ", Error: " + err);
+						"Could not dynamically instantiate class: " + className + ", Error: " + err,
+						QAntTracer.getTraceMessage(err));
 			}
 		} else {
 			QAntTracer.error(this.getClass(), "Cannot find a controller command for request ID: " + reqId);

@@ -13,5 +13,5 @@ public interface IService {
 
 	String getName();
 
-	void setName(String p0);
+	void setName(String name);
 }
