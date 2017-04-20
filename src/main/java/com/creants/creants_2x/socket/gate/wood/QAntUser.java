@@ -1,16 +1,21 @@
 package com.creants.creants_2x.socket.gate.wood;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
+import com.creants.creants_2x.core.entities.Room;
+import com.creants.creants_2x.core.entities.Zone;
 import com.creants.creants_2x.socket.gate.IQAntUser;
 
 import io.netty.channel.Channel;
+import io.netty.util.AttributeKey;
 
 /**
  * @author LamHa
  *
  */
 public class QAntUser implements IQAntUser {
+	private static final AttributeKey<Long> LAST_REQUEST_TIME = AttributeKey.valueOf("last.request.time");
 	private long sessionId;
 	private int userId;
 	private long createTime;
@@ -24,10 +29,28 @@ public class QAntUser implements IQAntUser {
 	private long loginTime;
 	private byte currentGameId = -1;
 	private Channel channel;
+	private final LinkedList<Room> joinedRooms;
 
 
 	public QAntUser() {
 		userId = -1;
+		joinedRooms = new LinkedList<Room>();
+	}
+
+
+	public Room getLastJoinedRoom() {
+		Room lastRoom = null;
+		synchronized (joinedRooms) {
+			if (joinedRooms.size() > 0) {
+				lastRoom = joinedRooms.getLast();
+			}
+		}
+		return lastRoom;
+	}
+
+
+	public Zone getZone() {
+		return null;
 	}
 
 
@@ -43,7 +66,37 @@ public class QAntUser implements IQAntUser {
 	}
 
 
+	public void addCreatedRoom(Room room) {
+
+	}
+
+
 	public boolean isNPC() {
+		return false;
+	}
+
+
+	public void removeJoinedRoom(Room room) {
+
+	}
+
+
+	public void addJoinedRoom(Room room) {
+
+	}
+
+
+	public void setPlayerId(int playerId, Room room) {
+
+	}
+
+
+	public boolean isPlayer(Room room) {
+		return true;
+	}
+
+
+	public boolean isSpectator(Room room) {
 		return false;
 	}
 
@@ -140,6 +193,11 @@ public class QAntUser implements IQAntUser {
 	}
 
 
+	public int getPlayerId(Room room) {
+		return -1;
+	}
+
+
 	@Override
 	public String getUserName() {
 		return userName;
@@ -227,7 +285,7 @@ public class QAntUser implements IQAntUser {
 
 
 	public long getLastRequestTime() {
-		return 0;
+		return channel.attr(LAST_REQUEST_TIME).get();
 	}
 
 
@@ -237,7 +295,7 @@ public class QAntUser implements IQAntUser {
 
 
 	public void setLastRequestTime(long lastRequestTime) {
-		// TODO set lastrequestTime cua 1 seesion user
+		channel.attr(LAST_REQUEST_TIME).set(lastRequestTime);
 	}
 
 

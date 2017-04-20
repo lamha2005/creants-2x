@@ -2,29 +2,40 @@ package com.creants.creants_2x.core.api;
 
 import java.util.List;
 
+import com.creants.creants_2x.core.entities.Room;
+import com.creants.creants_2x.core.entities.Zone;
+import com.creants.creants_2x.core.exception.QAntCreateRoomException;
+import com.creants.creants_2x.core.exception.QAntJoinRoomException;
+import com.creants.creants_2x.core.setting.CreateRoomSettings;
 import com.creants.creants_2x.socket.gate.entities.IQAntObject;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
+
+import io.netty.channel.Channel;
 
 /**
  * @author LamHa
  *
  */
-public abstract interface IQAntAPI {
+public interface IQAntAPI {
 
 	/**
 	 * User thực hiện logout
 	 * 
 	 * @param user
 	 */
-	abstract void logout(QAntUser user);
+	void logout(QAntUser user);
 
 
 	/**
-	 * Thực hiện login
+	 * Thực hiện login theo token
 	 * 
 	 * @param user
 	 */
-	abstract void login(QAntUser user);
+
+	QAntUser login(Channel channel, String token, IQAntObject param);
+
+
+	QAntUser login(Channel channel, String token, IQAntObject param, boolean forceLogout);
 
 
 	/**
@@ -37,20 +48,63 @@ public abstract interface IQAntAPI {
 	 * @param paramString
 	 * @param paramInt
 	 */
-	abstract void kickUser(QAntUser owner, QAntUser kickedUser, String paramString, int paramInt);
+	void kickUser(QAntUser owner, QAntUser kickedUser, String paramString, int paramInt);
 
 
-	abstract void disconnectUser(QAntUser user);
+	void disconnectUser(QAntUser user);
 
 
-	abstract QAntUser getUserById(int userId);
+	void disconnect(Channel channel);
 
 
-	abstract QAntUser getUserByName(String name);
+	QAntUser getUserById(int userId);
 
 
-	abstract void sendExtensionResponse(IQAntObject message, List<QAntUser> recipients);
+	QAntUser getUserByName(String name);
 
 
-	abstract void sendExtensionResponse(IQAntObject message, QAntUser recipient);
+	Room createRoom(Zone zone, CreateRoomSettings roomSetting, QAntUser user) throws QAntCreateRoomException;
+
+
+	Room createRoom(Zone zone, CreateRoomSettings roomSetting, QAntUser user, boolean joinIt, Room roomToLeave)
+			throws QAntCreateRoomException;
+
+
+	Room createRoom(Zone zone, CreateRoomSettings roomSetting, QAntUser user, boolean joinIt, Room roomToLeave,
+			boolean fireClientEvent, boolean fireServerEvent) throws QAntCreateRoomException;
+
+
+	void joinRoom(QAntUser user, Room room) throws QAntJoinRoomException;
+
+
+	void joinRoom(QAntUser user, Room room, String password, boolean asSpectator, Room roomToLeave)
+			throws QAntJoinRoomException;
+
+
+	void joinRoom(QAntUser user, Room roomToJoin, String password, boolean asSpectator, Room roomToLeave,
+			boolean fireClientEvent, boolean fireServerEvent) throws QAntJoinRoomException;
+
+
+	void leaveRoom(QAntUser user, Room room);
+
+
+	void leaveRoom(QAntUser user, Room room, boolean fireClientEvent, boolean fireServerEvent);
+
+
+	void removeRoom(Room room);
+
+
+	void removeRoom(Room room, boolean fireClientEvent, boolean fireServerEvent);
+
+
+	void sendPublicMessage(Room room, QAntUser user, String message, IQAntObject param);
+
+
+	void sendPrivateMessage(QAntUser sender, QAntUser receiver, String message, IQAntObject param);
+
+
+	void sendExtensionResponse(IQAntObject message, List<QAntUser> recipients);
+
+
+	void sendExtensionResponse(IQAntObject message, QAntUser recipient);
 }

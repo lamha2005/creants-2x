@@ -57,12 +57,13 @@ public enum SystemRequest {
 	OnMMOItemVariablesUpdate("OnMMOItemVariablesUpdate", 49, (short) 1007);
 	private short id;
 
-	public static SystemRequest fromId(Object id) {
+
+	public static SystemRequest fromId(short id) {
 		SystemRequest req = null;
 		SystemRequest[] values;
 		for (int length = (values = values()).length, i = 0; i < length; ++i) {
 			final SystemRequest item = values[i];
-			if (item.getId().equals(id)) {
+			if (item.getId() == id) {
 				req = item;
 				break;
 			}
@@ -70,11 +71,13 @@ public enum SystemRequest {
 		return req;
 	}
 
+
 	private SystemRequest(String s, int n, short id) {
 		this.id = id;
 	}
 
-	public Object getId() {
-		return this.id;
+
+	public short getId() {
+		return id;
 	}
 }

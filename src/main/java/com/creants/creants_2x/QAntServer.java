@@ -4,6 +4,7 @@ import java.net.SocketAddress;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.creants.creants_2x.core.IQAntEventManager;
 import com.creants.creants_2x.core.api.APIManager;
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.util.AppConfig;
@@ -39,6 +40,7 @@ public class QAntServer {
 	private MessageHandler messageHandler;
 	private SystemHandlerManager systemHandlerManager;
 	private APIManager apiManager;
+	private IQAntEventManager eventManager;
 
 
 	public static QAntServer getInstance() {
@@ -60,7 +62,6 @@ public class QAntServer {
 		initialize();
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
-
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap bootstrap = new ServerBootstrap();
@@ -158,13 +159,13 @@ public class QAntServer {
 	}
 
 
-	public MessageHandler getMessageHandler() {
-		return messageHandler;
+	public APIManager getApiManager() {
+		return apiManager;
 	}
 
 
-	public APIManager getApiManager() {
-		return apiManager;
+	public IQAntEventManager getEventManager() {
+		return eventManager;
 	}
 
 
