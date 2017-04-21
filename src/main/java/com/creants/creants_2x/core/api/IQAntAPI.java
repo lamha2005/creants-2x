@@ -2,6 +2,7 @@ package com.creants.creants_2x.core.api;
 
 import java.util.List;
 
+import com.creants.creants_2x.core.api.response.IResponseApi;
 import com.creants.creants_2x.core.entities.Room;
 import com.creants.creants_2x.core.entities.Zone;
 import com.creants.creants_2x.core.exception.QAntCreateRoomException;
@@ -17,6 +18,9 @@ import io.netty.channel.Channel;
  *
  */
 public interface IQAntAPI {
+
+	IResponseApi getResponseAPI();
+
 
 	/**
 	 * User thực hiện logout

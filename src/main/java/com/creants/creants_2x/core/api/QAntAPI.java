@@ -53,11 +53,18 @@ public class QAntAPI implements IQAntAPI {
 
 
 	@Override
+	public IResponseApi getResponseAPI() {
+		return responseAPI;
+	}
+
+
+	@Override
 	public void logout(QAntUser user) {
 		if (user == null) {
 			QAntTracer.warn(this.getClass(), "Cannot logout null user.");
 			return;
 		}
+
 		Zone zone = user.getZone();
 		List<Room> joinedRooms = user.getJoinedRooms();
 		Map<Room, Integer> playerIds = user.getPlayerIds();

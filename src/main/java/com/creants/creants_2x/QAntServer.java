@@ -14,6 +14,7 @@ import com.creants.creants_2x.socket.channels.IChannelManager;
 import com.creants.creants_2x.socket.codec.MessageDecoder;
 import com.creants.creants_2x.socket.codec.MessageEncoder;
 import com.creants.creants_2x.socket.gate.MessageHandler;
+import com.creants.creants_2x.socket.managers.IUserManager;
 import com.creants.creants_2x.socket.managers.UserManager;
 import com.creants.creants_2x.websocket.codec.WebsocketDecoder;
 import com.creants.creants_2x.websocket.codec.WebsocketEncoder;
@@ -42,7 +43,9 @@ public class QAntServer {
 	private MessageHandler messageHandler;
 	private SystemHandlerManager systemHandlerManager;
 	private APIManager apiManager;
+	private IUserManager userManager;
 	private IQAntEventManager eventManager;
+	private IChannelManager channelManager;
 
 
 	public static QAntServer getInstance() {
@@ -80,7 +83,9 @@ public class QAntServer {
 				public void operationComplete(ChannelFuture future) throws Exception {
 					if (future.isSuccess()) {
 						SocketAddress localAddress = future.channel().localAddress();
+						QAntTracer.info(this.getClass(), "SOCKET SERVER INFO:" + localAddress.toString());
 					} else {
+						QAntTracer.error(this.getClass(), "Bound attempt failed! ", future.cause().toString());
 					}
 				}
 			});
@@ -100,7 +105,10 @@ public class QAntServer {
 				public void operationComplete(ChannelFuture future) throws Exception {
 					if (future.isSuccess()) {
 						SocketAddress localAddress = future.channel().localAddress();
+						QAntTracer.info(this.getClass(), "WEBSOCKET SERVER INFO:" + localAddress.toString());
 					} else {
+						QAntTracer.error(this.getClass(), "WEBSOCKET Bound attempt failed! ",
+								future.cause().toString());
 					}
 				}
 			});
@@ -122,7 +130,7 @@ public class QAntServer {
 	private void initialize() {
 		(apiManager = new APIManager()).init(null);
 		(eventManager = new QAntEventManager()).init(null);
-		;
+		userManager = new UserManager();
 	}
 
 
@@ -153,13 +161,13 @@ public class QAntServer {
 	}
 
 
-	public UserManager getUserManager() {
-		return null;
+	public IUserManager getUserManager() {
+		return userManager;
 	}
 
 
 	public IChannelManager getChannelManager() {
-		return null;
+		return channelManager;
 	}
 
 
