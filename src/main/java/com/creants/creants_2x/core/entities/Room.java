@@ -7,7 +7,6 @@ import com.creants.creants_2x.core.extension.IQAntExtension;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
 import com.creants.creants_2x.socket.managers.IUserManager;
 import com.smartfoxserver.v2.entities.RoomSize;
-import com.smartfoxserver.v2.exceptions.SFSJoinRoomException;
 
 import io.netty.channel.Channel;
 
@@ -17,6 +16,9 @@ import io.netty.channel.Channel;
  */
 public interface Room {
 	int getId();
+
+
+	Zone getZone();
 
 
 	String getGroupId();
@@ -68,7 +70,7 @@ public interface Room {
 
 
 	QAntUser getOwner();
-
+	
 
 	void setOwner(QAntUser user);
 

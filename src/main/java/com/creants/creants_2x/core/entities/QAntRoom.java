@@ -492,4 +492,11 @@ public class QAntRoom implements Room {
 		this.maxRoomVariablesAllowed = max;
 	}
 
+
+	@Override
+	public Zone getZone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

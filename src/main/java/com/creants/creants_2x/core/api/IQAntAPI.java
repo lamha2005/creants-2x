@@ -63,6 +63,9 @@ public interface IQAntAPI {
 	QAntUser getUserByName(String name);
 
 
+	QAntUser getUserByChannel(Channel channel);
+
+
 	Room createRoom(Zone zone, CreateRoomSettings roomSetting, QAntUser user) throws QAntCreateRoomException;
 
 
@@ -103,8 +106,8 @@ public interface IQAntAPI {
 	void sendPrivateMessage(QAntUser sender, QAntUser receiver, String message, IQAntObject param);
 
 
-	void sendExtensionResponse(IQAntObject message, List<QAntUser> recipients);
+	void sendExtensionResponse(String cmdName, IQAntObject message, List<QAntUser> recipients, Room room);
 
 
-	void sendExtensionResponse(IQAntObject message, QAntUser recipient);
+	void sendExtensionResponse(String cmdName, IQAntObject message, QAntUser recipient, Room room);
 }

@@ -2,6 +2,8 @@ package com.creants.creants_2x.socket.gate.wood;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import com.creants.creants_2x.core.entities.Room;
 import com.creants.creants_2x.core.entities.Zone;
@@ -30,6 +32,7 @@ public class QAntUser implements IQAntUser {
 	private byte currentGameId = -1;
 	private Channel channel;
 	private final LinkedList<Room> joinedRooms;
+	private boolean isConnected;
 
 
 	public QAntUser() {
@@ -45,12 +48,48 @@ public class QAntUser implements IQAntUser {
 				lastRoom = joinedRooms.getLast();
 			}
 		}
+
 		return lastRoom;
+	}
+
+
+	public List<Room> getJoinedRooms() {
+		return joinedRooms;
+	}
+
+
+	public Map<Room, Integer> getPlayerIds() {
+		return null;
+	}
+
+
+	public List<Room> getCreatedRooms() {
+		return null;
+	}
+
+
+	public void setConnected(boolean isConnected) {
+		this.isConnected = isConnected;
+	}
+
+
+	public boolean isConnected() {
+		return isConnected;
+	}
+
+
+	public boolean isJoinedInRoom(Room room) {
+		return true;
 	}
 
 
 	public Zone getZone() {
 		return null;
+	}
+
+
+	public void removeCreatedRoom(Room room) {
+
 	}
 
 
@@ -231,11 +270,6 @@ public class QAntUser implements IQAntUser {
 	@Override
 	public void setVersion(String version) {
 
-	}
-
-
-	public boolean isConnected() {
-		return false;
 	}
 
 

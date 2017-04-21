@@ -5,13 +5,17 @@ package com.creants.creants_2x.core.service;
  *
  */
 public interface IService {
-	void init(Object p0);
+	void init(Object obj);
 
-	void destroy(Object p0);
 
-	void handleMessage(Object p0);
+	void destroy(Object obj);
+
+
+	void handleMessage(Object message) throws Exception;
+
 
 	String getName();
+
 
 	void setName(String name);
 }

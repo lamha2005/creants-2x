@@ -2,7 +2,7 @@ package com.creants.creants_2x.core;
 
 import java.util.concurrent.Executor;
 
-import com.smartfoxserver.bitswarm.service.IService;
+import com.creants.creants_2x.core.service.IService;
 
 /**
  * @author LamHM

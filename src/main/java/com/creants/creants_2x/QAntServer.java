@@ -5,10 +5,12 @@ import java.net.SocketAddress;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.creants.creants_2x.core.IQAntEventManager;
+import com.creants.creants_2x.core.QAntEventManager;
 import com.creants.creants_2x.core.api.APIManager;
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.util.AppConfig;
 import com.creants.creants_2x.core.util.QAntTracer;
+import com.creants.creants_2x.socket.channels.IChannelManager;
 import com.creants.creants_2x.socket.codec.MessageDecoder;
 import com.creants.creants_2x.socket.codec.MessageEncoder;
 import com.creants.creants_2x.socket.gate.MessageHandler;
@@ -119,6 +121,8 @@ public class QAntServer {
 
 	private void initialize() {
 		(apiManager = new APIManager()).init(null);
+		(eventManager = new QAntEventManager()).init(null);
+		;
 	}
 
 
@@ -150,6 +154,11 @@ public class QAntServer {
 
 
 	public UserManager getUserManager() {
+		return null;
+	}
+
+
+	public IChannelManager getChannelManager() {
 		return null;
 	}
 

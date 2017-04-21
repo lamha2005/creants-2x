@@ -5,5 +5,5 @@ package com.creants.creants_2x.core;
  *
  */
 public interface IQAntEventListener {
-
+	void handleServerEvent(IQAntEvent event) throws Exception;
 }
