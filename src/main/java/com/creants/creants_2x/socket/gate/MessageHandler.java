@@ -41,11 +41,11 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 	private static final AtomicLong nextSessionId = new AtomicLong(System.currentTimeMillis());
 	private static final ChannelService channelService = ChannelService.getInstance();
 
-	protected final IControllerManager controllerManager;
+	protected IControllerManager controllerManager;
 
 
 	public MessageHandler() {
-		controllerManager = getControllerManager();
+		
 	}
 
 
@@ -59,6 +59,10 @@ public class MessageHandler extends SimpleChannelInboundHandler<IQAntObject> {
 			send(user, DefaultMessageFactory.createConnectMessage(sessionId));
 		}
 
+	}
+	
+	public void init(){
+		controllerManager = getControllerManager();
 	}
 
 

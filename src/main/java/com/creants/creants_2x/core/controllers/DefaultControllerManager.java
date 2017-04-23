@@ -12,13 +12,13 @@ public class DefaultControllerManager implements IControllerManager {
 	protected String name;
 	protected ConcurrentMap<Byte, IController> controllers;
 
-
 	public DefaultControllerManager() {
 		controllers = new ConcurrentHashMap<Byte, IController>();
 		SystemController systemController = new SystemController();
+		ExtensionController extensionController = new ExtensionController();
+
 		systemController.setThreadPoolSize(1);
 		systemController.setMaxQueueSize(50);
-		ExtensionController extensionController = new ExtensionController();
 		extensionController.setThreadPoolSize(1);
 		extensionController.setMaxQueueSize(50);
 
@@ -42,12 +42,10 @@ public class DefaultControllerManager implements IControllerManager {
 	// }
 	// }
 
-
 	@Override
 	public void init(Object o) {
-		this.startAllControllers();
+		startAllControllers();
 	}
-
 
 	@Override
 	public void destroy(Object o) {
@@ -55,48 +53,40 @@ public class DefaultControllerManager implements IControllerManager {
 		controllers = null;
 	}
 
-
 	@Override
 	public String getName() {
 		return name;
 	}
-
 
 	@Override
 	public void setName(final String name) {
 		this.name = name;
 	}
 
-
 	@Override
 	public void handleMessage(Object message) {
 	}
-
 
 	@Override
 	public void addController(byte id, IController controller) {
 		controllers.putIfAbsent(id, controller);
 	}
 
-
 	@Override
 	public IController getControllerById(byte id) {
 		return controllers.get(id);
 	}
-
 
 	@Override
 	public void removeController(byte id) {
 		controllers.remove(id);
 	}
 
-
 	private synchronized void shutDownAllControllers() {
 		for (IController controller : controllers.values()) {
 			controller.destroy(null);
 		}
 	}
-
 
 	private synchronized void startAllControllers() {
 		for (IController controller : controllers.values()) {

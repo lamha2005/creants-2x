@@ -127,6 +127,7 @@ public class QAntServer {
 	}
 
 	private void initialize() {
+		messageHandler.init();
 		(apiManager = new APIManager()).init(null);
 		(eventManager = new QAntEventManager()).init(null);
 		userManager = new UserManager();

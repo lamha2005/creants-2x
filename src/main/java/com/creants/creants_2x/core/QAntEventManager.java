@@ -31,7 +31,7 @@ public class QAntEventManager extends BaseCoreService implements IQAntEventManag
 	@Override
 	public synchronized void init(Object o) {
 		QAntTracer.info(this.getClass(), "- init QAntEventManager");
-		if (!this.inited) {
+		if (!inited) {
 			super.init(o);
 			SmartExecutorConfig cfg = new SmartExecutorConfig();
 			cfg.name = "Ext";
@@ -78,7 +78,7 @@ public class QAntEventManager extends BaseCoreService implements IQAntEventManag
 		Set<IQAntEventListener> listeners = listenersByEvent.get(event.getType());
 		if (listeners != null && listeners.size() > 0) {
 			for (IQAntEventListener listener : listeners) {
-				threadPool.execute(new SFSEventRunner(listener, event));
+				threadPool.execute(new QAntEventRunner(listener, event));
 			}
 		}
 	}
@@ -88,7 +88,7 @@ public class QAntEventManager extends BaseCoreService implements IQAntEventManag
 	public void destroy(Object o) {
 		super.destroy(o);
 		listenersByEvent.clear();
-		QAntTracer.info(this.getClass(), String.valueOf(this.name) + " shut down.");
+		QAntTracer.info(this.getClass(), String.valueOf(name) + " shut down.");
 	}
 
 
@@ -103,12 +103,12 @@ public class QAntEventManager extends BaseCoreService implements IQAntEventManag
 		return this.threadPool;
 	}
 
-	private static final class SFSEventRunner implements Runnable {
+	private static final class QAntEventRunner implements Runnable {
 		private final IQAntEventListener listener;
 		private final IQAntEvent event;
 
 
-		public SFSEventRunner(IQAntEventListener listener, IQAntEvent event) {
+		public QAntEventRunner(IQAntEventListener listener, IQAntEvent event) {
 			this.listener = listener;
 			this.event = event;
 		}
@@ -119,8 +119,8 @@ public class QAntEventManager extends BaseCoreService implements IQAntEventManag
 			try {
 				listener.handleServerEvent(event);
 			} catch (Throwable t) {
-				QAntTracer.warn(SFSEventRunner.class,
-						"Error handling event: " + this.event + " Listener: " + this.listener);
+				QAntTracer.warn(QAntEventRunner.class,
+						"Error handling event: " + event + " Listener: " + listener);
 			}
 		}
 	}
