@@ -8,6 +8,8 @@ import com.creants.creants_2x.core.IQAntEventManager;
 import com.creants.creants_2x.core.QAntEventManager;
 import com.creants.creants_2x.core.api.APIManager;
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
+import com.creants.creants_2x.core.managers.IExtensionManager;
+import com.creants.creants_2x.core.managers.QAntExtensionManager;
 import com.creants.creants_2x.core.util.AppConfig;
 import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.channels.IChannelManager;
@@ -46,7 +48,7 @@ public class QAntServer {
 	private IUserManager userManager;
 	private IQAntEventManager eventManager;
 	private IChannelManager channelManager;
-
+	private IExtensionManager extensionManager;
 
 	public static QAntServer getInstance() {
 		if (instance == null) {
@@ -56,11 +58,9 @@ public class QAntServer {
 		return instance;
 	}
 
-
 	private QAntServer() {
 		messageHandler = new MessageHandler();
 	}
-
 
 	private void start() throws InterruptedException {
 		QAntTracer.debug(this.getClass(), "======================== QUEEN ANT SOCKET =====================");
@@ -126,13 +126,14 @@ public class QAntServer {
 
 	}
 
-
 	private void initialize() {
 		(apiManager = new APIManager()).init(null);
 		(eventManager = new QAntEventManager()).init(null);
 		userManager = new UserManager();
-	}
+		eventManager = new QAntEventManager();
+		extensionManager = new QAntExtensionManager();
 
+	}
 
 	private ChannelInitializer<SocketChannel> buildWebsocketChannelInitializer() {
 		return new ChannelInitializer<SocketChannel>() {
@@ -149,7 +150,6 @@ public class QAntServer {
 		};
 	}
 
-
 	private ChannelInitializer<SocketChannel> buildSocketChannelInitializer() {
 		return new ChannelInitializer<SocketChannel>() {
 			@Override
@@ -160,31 +160,29 @@ public class QAntServer {
 		};
 	}
 
-
 	public IUserManager getUserManager() {
 		return userManager;
 	}
-
 
 	public IChannelManager getChannelManager() {
 		return channelManager;
 	}
 
-
 	public SystemHandlerManager getSystemHandlerManager() {
 		return systemHandlerManager;
 	}
-
 
 	public APIManager getApiManager() {
 		return apiManager;
 	}
 
-
 	public IQAntEventManager getEventManager() {
 		return eventManager;
 	}
 
+	public IExtensionManager getExtensionManager() {
+		return extensionManager;
+	}
 
 	public static void main(String[] args) throws Exception {
 		System.setProperty("log4j.configurationFile", "resources/log4j2.xml");

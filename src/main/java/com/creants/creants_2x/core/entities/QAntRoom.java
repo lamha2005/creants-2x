@@ -8,11 +8,10 @@ import com.creants.creants_2x.core.exception.QAntErrorCode;
 import com.creants.creants_2x.core.exception.QAntErrorData;
 import com.creants.creants_2x.core.exception.QAntJoinRoomException;
 import com.creants.creants_2x.core.extension.IQAntExtension;
+import com.creants.creants_2x.core.util.IPlayerIdGenerator;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
 import com.creants.creants_2x.socket.managers.IUserManager;
 import com.creants.creants_2x.socket.managers.UserManager;
-import com.smartfoxserver.v2.entities.RoomSize;
-import com.smartfoxserver.v2.util.IPlayerIdGenerator;
 
 import io.netty.channel.Channel;
 

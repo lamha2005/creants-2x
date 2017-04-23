@@ -1,11 +1,11 @@
 package com.creants.creants_2x.core.controllers;
 
 import com.creants.creants_2x.QAntServer;
+import com.creants.creants_2x.core.exception.QAntExtensionException;
 import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.gate.entities.IQAntObject;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
 import com.creants.creants_2x.socket.io.IRequest;
-import com.smartfoxserver.v2.exceptions.SFSExtensionException;
 
 /**
  * @author LamHM
@@ -16,10 +16,8 @@ public class ExtensionController extends AbstractController {
 	public static final String KEY_EXT_PARAMS = "p";
 	public static final String KEY_ROOMID = "r";
 
-
 	public ExtensionController() {
 	}
-
 
 	@Override
 	public void processRequest(IRequest request) throws Exception {
@@ -27,7 +25,7 @@ public class ExtensionController extends AbstractController {
 		long t1 = System.nanoTime();
 		QAntUser sender = QAntServer.getInstance().getUserManager().getUserByChannel(request.getSender());
 		if (sender == null) {
-			throw new SFSExtensionException("Extension Request refused. Sender is not a User: " + request.getSender());
+			throw new QAntExtensionException("Extension Request refused. Sender is not a User: " + request.getSender());
 		}
 		IQAntObject reqObj = (IQAntObject) request.getContent();
 		QAntTracer.debug(this.getClass(), reqObj.getDump());

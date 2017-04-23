@@ -5,18 +5,25 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.creants.creants_2x.QAntServer;
 import com.creants.creants_2x.core.IQAntEvent;
 import com.creants.creants_2x.core.IQAntEventListener;
 import com.creants.creants_2x.core.IQAntEventManager;
 import com.creants.creants_2x.core.QAntEventParam;
+import com.creants.creants_2x.core.QAntEventSysParam;
 import com.creants.creants_2x.core.QAntEventType;
+import com.creants.creants_2x.core.QAntSystemEvent;
 import com.creants.creants_2x.core.config.ZoneSettings;
 import com.creants.creants_2x.core.config.ZoneSettings.ExtensionSettings;
+import com.creants.creants_2x.core.controllers.IControllerCommand;
 import com.creants.creants_2x.core.entities.Room;
 import com.creants.creants_2x.core.entities.Zone;
 import com.creants.creants_2x.core.exception.QAntExtensionException;
@@ -26,27 +33,28 @@ import com.creants.creants_2x.core.extension.ExtensionType;
 import com.creants.creants_2x.core.extension.IQAntExtension;
 import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
+import com.creants.creants_2x.socket.io.IRequest;
 
 /**
  * @author LamHM
  *
  */
 public class QAntExtensionManager implements IExtensionManager, IQAntEventListener {
-	private static final String JAR_EXTENSION = "jar";
-
 	private final ConcurrentMap<Zone, IQAntExtension> extensionsByZone;
 	private final ConcurrentMap<Room, IQAntExtension> extensionsByRoom;
+	private final Map<Room, Map<QAntEventType, Set<IQAntEventListener>>> listenersByRoom;
+	private final Map<Zone, Map<QAntEventType, Set<IQAntEventListener>>> listenersByZone;
 	private QAntServer qant;
 	private IQAntEventManager eventManager;
 	private boolean inited;
-
 
 	public QAntExtensionManager() {
 		inited = false;
 		extensionsByZone = new ConcurrentHashMap<Zone, IQAntExtension>();
 		extensionsByRoom = new ConcurrentHashMap<Room, IQAntExtension>();
+		listenersByRoom = new ConcurrentHashMap<Room, Map<QAntEventType, Set<IQAntEventListener>>>();
+		listenersByZone = new ConcurrentHashMap<Zone, Map<QAntEventType, Set<IQAntEventListener>>>();
 	}
-
 
 	@Override
 	public void createExtension(ExtensionSettings settings, ExtensionLevel extLevel, Zone parentZone, Room parentRoom)
@@ -109,7 +117,6 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 		}
 	}
 
-
 	private IQAntExtension createJavaExtension(ZoneSettings.ExtensionSettings settings) throws QAntExtensionException {
 		IQAntExtension extension;
 		File jarFile = new File("extensions/" + settings.name);
@@ -128,7 +135,6 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 
 		return extension;
 	}
-
 
 	@Override
 	public void destroyExtension(IQAntExtension extension) {
@@ -151,7 +157,6 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 		QAntTracer.debug(this.getClass(), "Removed: " + extension);
 	}
 
-
 	@Override
 	public void addExtension(IQAntExtension extension) {
 		if (extension.getLevel() == ExtensionLevel.ZONE) {
@@ -161,24 +166,20 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 		}
 	}
 
-
 	@Override
 	public IQAntExtension getRoomExtension(Room room) {
 		return extensionsByRoom.get(room);
 	}
-
 
 	@Override
 	public IQAntExtension getZoneExtension(Zone zone) {
 		return extensionsByZone.get(zone);
 	}
 
-
 	@Override
 	public int getExtensionsCount() {
 		return extensionsByRoom.size() + extensionsByZone.size();
 	}
-
 
 	@Override
 	public List<IQAntExtension> getExtensions() {
@@ -186,7 +187,6 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 		allOfThem.addAll(extensionsByZone.values());
 		return allOfThem;
 	}
-
 
 	@Override
 	public void init() {
@@ -202,7 +202,6 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 			QAntTracer.debug(this.getClass(), "Extension Manager started.");
 		}
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -249,21 +248,49 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 		}
 	}
 
-
 	private void dispatchRoomLevelEvent(IQAntEvent event) {
-
+		Room room = (Room) event.getParameter(QAntEventParam.ROOM);
+		dispatchRoomLevelEvent(event, room);
 	}
 
-
-	private void dispatchRoomLevelEvent(IQAntEvent event, List<Room> parameter) {
-
+	private void dispatchRoomLevelEvent(IQAntEvent event, Room room) {
+		if (room != null) {
+			Map<QAntEventType, Set<IQAntEventListener>> listenersByType = listenersByRoom.get(room);
+			if (listenersByType != null) {
+				Set<IQAntEventListener> listeners = listenersByType.get(event.getType());
+				dispatchEvent(event, listeners);
+			}
+		} else {
+			QAntTracer.info(this.getClass(), "Room Event was not dispatched. ROOM param is null: " + event);
+		}
 	}
 
+	private void dispatchRoomLevelEvent(IQAntEvent event, List<Room> roomList) {
+		if (roomList != null) {
+			for (Room room : roomList) {
+				Map<QAntEventType, Set<IQAntEventListener>> listenersByType = listenersByRoom.get(room);
+				if (listenersByType != null) {
+					Set<IQAntEventListener> listeners = listenersByType.get(event.getType());
+					dispatchEvent(event, listeners);
+				}
+			}
+		} else {
+			QAntTracer.info(this.getClass(), "Multi Room Event was not dispatched. RoomList param is null: " + event);
+		}
+	}
 
 	private void dispatchZoneLevelEvent(IQAntEvent event) {
-
+		Zone zone = (Zone) event.getParameter(QAntEventParam.ZONE);
+		if (zone != null) {
+			Map<QAntEventType, Set<IQAntEventListener>> listenersByType = listenersByZone.get(zone);
+			if (listenersByType != null) {
+				Set<IQAntEventListener> listeners = listenersByType.get(event.getType());
+				dispatchEvent(event, listeners);
+			}
+		} else {
+			QAntTracer.info(this.getClass(), "Zone Event was not dispatched. ZONE param is null: " + event);
+		}
 	}
-
 
 	@Override
 	public void destroy() {
@@ -273,21 +300,18 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 			eventManager.removeEventListener(type, this);
 		}
 
-		// listenersByRoom.clear();
-		// this.listenersByZone.clear();
-		// for (final IQAntExtension extension : this.extensionsByRoom.values())
-		// {
-		// extension.destroy();
-		// }
-		// for (final IQAntExtension extension : this.extensionsByZone.values())
-		// {
-		// extension.destroy();
-		// }
+		listenersByRoom.clear();
+		listenersByZone.clear();
+		for (IQAntExtension extension : extensionsByRoom.values()) {
+			extension.destroy();
+		}
+		for (IQAntExtension extension : extensionsByZone.values()) {
+			extension.destroy();
+		}
 		extensionsByRoom.clear();
 		extensionsByZone.clear();
 		QAntTracer.debug(this.getClass(), "Extension Manager stopped.");
 	}
-
 
 	@Override
 	public void activateAllExtensions() {
@@ -295,13 +319,11 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 
 	}
 
-
 	@Override
 	public void deactivateAllExtensions() {
 		// TODO Auto-generated method stub
 
 	}
-
 
 	@Override
 	public void reloadExtension(IQAntExtension extension) {
@@ -309,13 +331,11 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 
 	}
 
-
 	@Override
 	public void reloadRoomExtension(String extensionName, Room room) {
 		// TODO Auto-generated method stub
 
 	}
-
 
 	@Override
 	public void reloadZoneExtension(String zoneName, Zone zone) {
@@ -323,27 +343,52 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 
 	}
 
-
 	@Override
-	public void addZoneEventListener(QAntEventType eventType, IQAntEventListener listener, Zone zone) {
-		// TODO Auto-generated method stub
-
+	public void addZoneEventListener(QAntEventType type, IQAntEventListener listener, Zone zone) {
+		Map<QAntEventType, Set<IQAntEventListener>> listenersByType = listenersByZone.get(zone);
+		if (listenersByType == null) {
+			listenersByType = new ConcurrentHashMap<QAntEventType, Set<IQAntEventListener>>();
+			listenersByZone.put(zone, listenersByType);
+		}
+		Set<IQAntEventListener> listeners = listenersByType.get(type);
+		if (listeners == null) {
+			listeners = new CopyOnWriteArraySet<IQAntEventListener>();
+			listenersByType.put(type, listeners);
+		}
+		listeners.add(listener);
 	}
-
 
 	@Override
 	public void addRoomEventListener(QAntEventType eventType, IQAntEventListener listener, Room room) {
-		// TODO Auto-generated method stub
+		Map<QAntEventType, Set<IQAntEventListener>> listenersByType = listenersByRoom.get(room);
+		if (listenersByType == null) {
+			listenersByType = new ConcurrentHashMap<QAntEventType, Set<IQAntEventListener>>();
+			this.listenersByRoom.put(room, listenersByType);
+		}
 
+		Set<IQAntEventListener> listeners = listenersByType.get(eventType);
+		if (listeners == null) {
+			listeners = new CopyOnWriteArraySet<IQAntEventListener>();
+			listenersByType.put(eventType, listeners);
+		}
+		listeners.add(listener);
 	}
-
 
 	@Override
-	public void removeZoneEventListener(QAntEventType eventType, IQAntEventListener listener, Zone zone) {
-		// TODO Auto-generated method stub
+	public void removeZoneEventListener(QAntEventType type, IQAntEventListener listener, Zone zone) {
+		Map<QAntEventType, Set<IQAntEventListener>> listenersByType = listenersByZone.get(zone);
+		if (listenersByType == null) {
+			listenersByType = new ConcurrentHashMap<QAntEventType, Set<IQAntEventListener>>();
+			listenersByZone.put(zone, listenersByType);
+		}
 
+		Set<IQAntEventListener> listeners = listenersByType.get(type);
+		if (listeners == null) {
+			listeners = new CopyOnWriteArraySet<IQAntEventListener>();
+			listenersByType.put(type, listeners);
+		}
+		listeners.add(listener);
 	}
-
 
 	@Override
 	public void removeRoomEventListener(QAntEventType eventType, IQAntEventListener listener, Room room) {
@@ -351,19 +396,16 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 
 	}
 
-
 	@Override
 	public void removeListenerFromZone(IQAntEventListener listener, Zone zone) {
 		// TODO Auto-generated method stub
 
 	}
 
-
 	@Override
 	public void removeListenerFromRoom(IQAntEventListener listener, Room room) {
 
 	}
-
 
 	@Override
 	public void dispatchEvent(IQAntEvent event, ExtensionLevel level) {
@@ -376,18 +418,61 @@ public class QAntExtensionManager implements IExtensionManager, IQAntEventListen
 		}
 	}
 
+	private void dispatchEvent(IQAntEvent event, Collection<IQAntEventListener> listeners) {
+		if (listeners != null && listeners.size() > 0) {
+			for (IQAntEventListener listener : listeners) {
+				try {
+					listener.handleServerEvent(event);
+					if (!(event instanceof QAntSystemEvent)) {
+						continue;
+					}
 
-	private void dispatchGlobalEvent(IQAntEvent event) {
-		// TODO Auto-generated method stub
-
+					executeEventCommand((QAntSystemEvent) event);
+				} catch (Exception e) {
+					QAntTracer.warn(this.getClass(), "Error during event handling: " + e + ", Listener: " + listener);
+				}
+			}
+		}
 	}
 
+	/**
+	 * Thực thi các custom sự kiện hệ thống
+	 * 
+	 * @param sysEvent
+	 * @throws Exception
+	 */
+	private void executeEventCommand(QAntSystemEvent sysEvent) throws Exception {
+		Class<?> commandClass = (Class<?>) sysEvent.getSysParameter(QAntEventSysParam.NEXT_COMMAND);
+		IRequest request = (IRequest) sysEvent.getSysParameter(QAntEventSysParam.REQUEST_OBJ);
+		if (commandClass != null && request != null) {
+			IControllerCommand command = (IControllerCommand) commandClass.newInstance();
+			command.execute(request);
+		}
+	}
+
+	private void dispatchGlobalEvent(IQAntEvent event) {
+		List<IQAntEventListener> allListeners = new ArrayList<IQAntEventListener>();
+		QAntEventType type = event.getType();
+		for (Map<QAntEventType, Set<IQAntEventListener>> zoneListeners : listenersByZone.values()) {
+			Set<IQAntEventListener> listeners = zoneListeners.get(type);
+			if (listeners != null) {
+				allListeners.addAll(listeners);
+			}
+		}
+
+		for (Map<QAntEventType, Set<IQAntEventListener>> roomListeners : listenersByRoom.values()) {
+			Set<IQAntEventListener> listeners = roomListeners.get(type);
+			if (listeners != null) {
+				allListeners.addAll(listeners);
+			}
+		}
+		dispatchEvent(event, allListeners);
+	}
 
 	@Override
 	public boolean isExtensionMonitorActive() {
 		return false;
 	}
-
 
 	@Override
 	public void setExtensionMonitorActive(boolean isActive) {
