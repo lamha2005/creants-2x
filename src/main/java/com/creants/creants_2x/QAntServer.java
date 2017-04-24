@@ -5,11 +5,15 @@ import java.net.SocketAddress;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.creants.creants_2x.core.IQAntEventManager;
+import com.creants.creants_2x.core.IServiceProvider;
 import com.creants.creants_2x.core.QAntEventManager;
+import com.creants.creants_2x.core.ServiceProvider;
 import com.creants.creants_2x.core.api.APIManager;
+import com.creants.creants_2x.core.entities.invitation.InvitationManager;
 import com.creants.creants_2x.core.event.handler.SystemHandlerManager;
 import com.creants.creants_2x.core.managers.IExtensionManager;
 import com.creants.creants_2x.core.managers.QAntExtensionManager;
+import com.creants.creants_2x.core.service.IService;
 import com.creants.creants_2x.core.util.AppConfig;
 import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.channels.IChannelManager;
@@ -49,6 +53,8 @@ public class QAntServer {
 	private IQAntEventManager eventManager;
 	private IChannelManager channelManager;
 	private IExtensionManager extensionManager;
+	private final IServiceProvider services;
+	private InvitationManager invitationManager;
 
 	public static QAntServer getInstance() {
 		if (instance == null) {
@@ -60,6 +66,7 @@ public class QAntServer {
 
 	private QAntServer() {
 		messageHandler = new MessageHandler();
+		services = new ServiceProvider();
 	}
 
 	private void start() throws InterruptedException {
@@ -133,6 +140,8 @@ public class QAntServer {
 		userManager = new UserManager();
 		eventManager = new QAntEventManager();
 		extensionManager = new QAntExtensionManager();
+		invitationManager = getServiceProvider().getInvitationManager();
+		((IService) invitationManager).init((Object) null);
 
 	}
 
@@ -173,7 +182,7 @@ public class QAntServer {
 		return systemHandlerManager;
 	}
 
-	public APIManager getApiManager() {
+	public APIManager getAPIManager() {
 		return apiManager;
 	}
 
@@ -183,6 +192,14 @@ public class QAntServer {
 
 	public IExtensionManager getExtensionManager() {
 		return extensionManager;
+	}
+
+	public IServiceProvider getServiceProvider() {
+		return this.services;
+	}
+
+	public InvitationManager getInvitationManager() {
+		return this.invitationManager;
 	}
 
 	public static void main(String[] args) throws Exception {

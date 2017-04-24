@@ -22,6 +22,8 @@ public interface Room {
 
 	void setGroupId(String groupId);
 
+	void setZone(Zone zone);;
+
 	String getName();
 
 	void setName(String name);

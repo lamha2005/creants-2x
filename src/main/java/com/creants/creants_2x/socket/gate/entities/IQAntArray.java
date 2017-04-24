@@ -95,10 +95,10 @@ public interface IQAntArray {
 	void addUtfStringArray(Collection<String> value);
 
 
-	void addCASArray(IQAntArray value);
+	void addQAntArray(IQAntArray value);
 
 
-	void addCASObject(IQAntObject value);
+	void addQAntObject(IQAntObject value);
 
 
 	void add(QAntDataWrapper wrappedObject);
@@ -164,8 +164,8 @@ public interface IQAntArray {
 	Collection<String> getUtfStringArray(int index);
 
 
-	IQAntArray getCASArray(int index);
+	IQAntArray getQAntArray(int index);
 
 
-	IQAntObject getCASObject(int index);
+	IQAntObject getQAntObject(int index);
 }

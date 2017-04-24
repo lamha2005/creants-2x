@@ -35,21 +35,19 @@ public class QAntRoom implements Room {
 	private volatile boolean active;
 	private volatile IQAntExtension extension;
 	private int maxRoomVariablesAllowed;
+	private Zone zone;
 
 	static {
 		QAntRoom.autoID = new AtomicInteger(0);
 	}
 
-
 	private static int getNewID() {
 		return QAntRoom.autoID.getAndIncrement();
 	}
 
-
 	public QAntRoom(String name) {
 		this(name, null);
 	}
-
 
 	public QAntRoom(String name, Class<?> customPlayerIdGeneratorClass) {
 		this.id = getNewID();
@@ -57,7 +55,6 @@ public class QAntRoom implements Room {
 		this.active = false;
 		this.userManager = new UserManager();
 	}
-
 
 	@Override
 	public String getGroupId() {
@@ -67,30 +64,34 @@ public class QAntRoom implements Room {
 		return "default";
 	}
 
-
 	@Override
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
+	@Override
+	public void setZone(Zone zone) {
+		this.zone = zone;
+		instantiateRoomIdGenerator();
+	}
+
+	private void instantiateRoomIdGenerator() {
+	}
 
 	@Override
 	public String getName() {
 		return name;
 	}
 
-
 	@Override
 	public void setName(final String name) {
 		this.name = name;
 	}
 
-
 	@Override
 	public String getPassword() {
 		return password;
 	}
-
 
 	@Override
 	public void setPassword(String password) {
@@ -98,24 +99,20 @@ public class QAntRoom implements Room {
 		passwordProtected = (password != null && password.length() > 0);
 	}
 
-
 	@Override
 	public boolean isPasswordProtected() {
 		return passwordProtected;
 	}
-
 
 	@Override
 	public boolean isPublic() {
 		return !passwordProtected;
 	}
 
-
 	@Override
 	public int getMaxUsers() {
 		return maxUsers;
 	}
-
 
 	@Override
 	public void setMaxUsers(int maxUsers) {
@@ -126,48 +123,40 @@ public class QAntRoom implements Room {
 		// }
 	}
 
-
 	@Override
 	public int getMaxSpectators() {
 		return maxSpectators;
 	}
-
 
 	@Override
 	public void setMaxSpectators(int maxSpectators) {
 		this.maxSpectators = maxSpectators;
 	}
 
-
 	@Override
 	public QAntUser getOwner() {
 		return owner;
 	}
-
 
 	@Override
 	public void setOwner(QAntUser owner) {
 		this.owner = owner;
 	}
 
-
 	@Override
 	public IUserManager getUserManager() {
 		return userManager;
 	}
-
 
 	@Override
 	public void setUserManager(IUserManager userManager) {
 		this.userManager = userManager;
 	}
 
-
 	@Override
 	public boolean isGame() {
 		return game;
 	}
-
 
 	public void setGame(final boolean game, final Class<? extends IPlayerIdGenerator> customPlayerIdGeneratorClass) {
 		this.game = game;
@@ -194,36 +183,30 @@ public class QAntRoom implements Room {
 		}
 	}
 
-
 	@Override
 	public void setGame(boolean game) {
 		this.setGame(game, null);
 	}
-
 
 	@Override
 	public boolean isHidden() {
 		return this.hidden;
 	}
 
-
 	@Override
 	public void setHidden(final boolean hidden) {
 		this.hidden = hidden;
 	}
-
 
 	@Override
 	public boolean isActive() {
 		return this.active;
 	}
 
-
 	@Override
 	public void setActive(final boolean flag) {
 		this.active = flag;
 	}
-
 
 	@Override
 	public List<QAntUser> getPlayersList() {
@@ -235,7 +218,6 @@ public class QAntRoom implements Room {
 		}
 		return playerList;
 	}
-
 
 	@Override
 	public RoomSize getSize() {
@@ -255,7 +237,6 @@ public class QAntRoom implements Room {
 		return new RoomSize(uCount, sCount);
 	}
 
-
 	@Override
 	public List<QAntUser> getSpectatorsList() {
 		final List<QAntUser> specList = new ArrayList<QAntUser>();
@@ -268,24 +249,20 @@ public class QAntRoom implements Room {
 		return specList;
 	}
 
-
 	@Override
 	public QAntUser getUserById(int id) {
 		return userManager.getUserById(id);
 	}
-
 
 	@Override
 	public QAntUser getUserByName(String name) {
 		return userManager.getUserByName(name);
 	}
 
-
 	@Override
 	public QAntUser getUserByChannel(Channel channel) {
 		return userManager.getUserByChannel(channel);
 	}
-
 
 	@Override
 	public QAntUser getUserByPlayerId(int playerId) {
@@ -300,24 +277,20 @@ public class QAntRoom implements Room {
 		return user;
 	}
 
-
 	@Override
 	public List<QAntUser> getUserList() {
 		return userManager.getAllUsers();
 	}
-
 
 	@Override
 	public List<Channel> getChannelList() {
 		return this.userManager.getAllChannels();
 	}
 
-
 	@Override
 	public int getCapacity() {
 		return maxUsers + maxSpectators;
 	}
-
 
 	@Override
 	public void setCapacity(int maxUser, int maxSpectators) {
@@ -325,29 +298,24 @@ public class QAntRoom implements Room {
 		this.maxSpectators = maxSpectators;
 	}
 
-
 	@Override
 	public void destroy() {
 	}
-
 
 	@Override
 	public boolean containsUser(String name) {
 		return userManager.containsName(name);
 	}
 
-
 	@Override
 	public boolean containsUser(QAntUser user) {
 		return userManager.containsUser(user);
 	}
 
-
 	@Override
 	public void addUser(QAntUser user) throws QAntJoinRoomException {
 		addUser(user, false);
 	}
-
 
 	@Override
 	public void addUser(QAntUser user, boolean asSpectator) throws QAntJoinRoomException {
@@ -389,7 +357,6 @@ public class QAntRoom implements Room {
 		}
 	}
 
-
 	@Override
 	public void removeUser(QAntUser user) {
 		if (isGame()) {
@@ -399,12 +366,10 @@ public class QAntRoom implements Room {
 		user.removeJoinedRoom(this);
 	}
 
-
 	@Override
 	public boolean isEmpty() {
 		return userManager.getUserCount() == 0;
 	}
-
 
 	@Override
 	public boolean isFull() {
@@ -414,13 +379,11 @@ public class QAntRoom implements Room {
 		return userManager.getUserCount() == maxUsers;
 	}
 
-
 	@Override
 	public String toString() {
 		return String.format("[ Room: %s, Id: %s, Group: %s, isGame: %s ]", this.name, this.id, this.groupId,
 				this.game);
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -435,18 +398,15 @@ public class QAntRoom implements Room {
 		return isEqual;
 	}
 
-
 	@Override
 	public IQAntExtension getExtension() {
 		return this.extension;
 	}
 
-
 	@Override
 	public void setExtension(IQAntExtension extension) {
 		this.extension = extension;
 	}
-
 
 	@Override
 	public String getDump() {
@@ -473,24 +433,20 @@ public class QAntRoom implements Room {
 		return sb.toString();
 	}
 
-
 	@Override
 	public int getId() {
 		return id;
 	}
-
 
 	@Override
 	public int getMaxRoomVariablesAllowed() {
 		return maxRoomVariablesAllowed;
 	}
 
-
 	@Override
 	public void setMaxRoomVariablesAllowed(int max) {
 		this.maxRoomVariablesAllowed = max;
 	}
-
 
 	@Override
 	public Zone getZone() {

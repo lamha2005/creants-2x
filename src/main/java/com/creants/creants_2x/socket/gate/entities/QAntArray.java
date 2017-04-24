@@ -276,14 +276,14 @@ public class QAntArray implements IQAntArray {
 
 
 	@Override
-	public IQAntArray getCASArray(int index) {
+	public IQAntArray getQAntArray(int index) {
 		QAntDataWrapper wrapper = dataHolder.get(index);
 		return (wrapper != null) ? ((IQAntArray) wrapper.getObject()) : null;
 	}
 
 
 	@Override
-	public IQAntObject getCASObject(int index) {
+	public IQAntObject getQAntObject(int index) {
 		QAntDataWrapper wrapper = dataHolder.get(index);
 		return (wrapper != null) ? ((IQAntObject) wrapper.getObject()) : null;
 	}
@@ -368,13 +368,13 @@ public class QAntArray implements IQAntArray {
 
 
 	@Override
-	public void addCASArray(IQAntArray value) {
+	public void addQAntArray(IQAntArray value) {
 		addObject(value, QAntDataType.QANT_ARRAY);
 	}
 
 
 	@Override
-	public void addCASObject(IQAntObject value) {
+	public void addQAntObject(IQAntObject value) {
 		addObject(value, QAntDataType.QANT_OBJECT);
 	}
 

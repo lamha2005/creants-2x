@@ -313,7 +313,7 @@ public class DefaultQAntDataSerializer implements IQAntDataSerializer {
 	public QAntArray resultSet2array(ResultSet rset) throws SQLException {
 		QAntArray CASa = new QAntArray();
 		while (rset.next()) {
-			CASa.addCASObject(resultSet2object(rset));
+			CASa.addQAntObject(resultSet2object(rset));
 		}
 		return CASa;
 	}

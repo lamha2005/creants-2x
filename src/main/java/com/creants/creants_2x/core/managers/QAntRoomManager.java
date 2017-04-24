@@ -1,19 +1,15 @@
 package com.creants.creants_2x.core.managers;
 
-import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.creants.creants_2x.QAntServer;
 import com.creants.creants_2x.core.BaseCoreService;
 import com.creants.creants_2x.core.config.ZoneSettings;
-import com.creants.creants_2x.core.entities.QAntRoom;
+import com.creants.creants_2x.core.entities.IRoomFactory;
 import com.creants.creants_2x.core.entities.Room;
 import com.creants.creants_2x.core.entities.Zone;
 import com.creants.creants_2x.core.exception.QAntCreateRoomException;
@@ -26,7 +22,7 @@ import com.creants.creants_2x.core.extension.ExtensionLevel;
 import com.creants.creants_2x.core.extension.ExtensionType;
 import com.creants.creants_2x.core.extension.IQAntExtension;
 import com.creants.creants_2x.core.setting.CreateRoomSettings;
-import com.creants.creants_2x.core.setting.QAntRoomSettings;
+import com.creants.creants_2x.core.util.DefaultPlayerIdGenerator;
 import com.creants.creants_2x.core.util.IPlayerIdGenerator;
 import com.creants.creants_2x.core.util.QAntTracer;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
@@ -70,6 +66,7 @@ public final class QAntRoomManager extends BaseCoreService implements IRoomManag
 		} catch (QAntRoomException roomExc) {
 			throw new QAntCreateRoomException(roomExc.getMessage(), roomExc.getErrorData());
 		}
+
 		Room newRoom = roomFactory.createNewRoom(params);
 		newRoom.setZone(ownerZone);
 		newRoom.setGroupId(params.getGroupId());
@@ -391,7 +388,7 @@ public final class QAntRoomManager extends BaseCoreService implements IRoomManag
 	private void removeWhenEmptyAndCreatorIsGone(Room room) {
 		QAntUser owner = room.getOwner();
 		if (owner != null && !owner.isConnected()) {
-			qant.getAPIManager().getSFSApi().removeRoom(room);
+			qant.getAPIManager().getQAntApi().removeRoom(room);
 		}
 	}
 

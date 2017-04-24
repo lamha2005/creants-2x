@@ -18,6 +18,8 @@ import com.creants.creants_2x.core.api.response.ResponseApi;
 import com.creants.creants_2x.core.controllers.SystemRequest;
 import com.creants.creants_2x.core.entities.Room;
 import com.creants.creants_2x.core.entities.Zone;
+import com.creants.creants_2x.core.entities.match.MatchExpression;
+import com.creants.creants_2x.core.entities.match.MatchingUtils;
 import com.creants.creants_2x.core.exception.QAntCreateRoomException;
 import com.creants.creants_2x.core.exception.QAntErrorCode;
 import com.creants.creants_2x.core.exception.QAntErrorData;
@@ -43,20 +45,19 @@ public class QAntAPI implements IQAntAPI {
 	protected final QAntServer qant;
 	protected final IUserManager globalUserManager;
 	protected final IResponseApi responseAPI;
-
+	private final MatchingUtils matcher;
 
 	public QAntAPI(QAntServer qant) {
 		this.qant = qant;
 		globalUserManager = this.qant.getUserManager();
 		responseAPI = new ResponseApi();
+		matcher = MatchingUtils.getInstance();
 	}
-
 
 	@Override
 	public IResponseApi getResponseAPI() {
 		return responseAPI;
 	}
-
 
 	@Override
 	public void logout(QAntUser user) {
@@ -90,12 +91,10 @@ public class QAntAPI implements IQAntAPI {
 				user.toString(), System.currentTimeMillis() - user.getLoginTime()));
 	}
 
-
 	@Override
 	public QAntUser login(Channel sender, String token, IQAntObject param) {
 		return login(sender, token, param, false);
 	}
-
 
 	@Override
 	public QAntUser login(Channel sender, String token, IQAntObject param, boolean forceLogout) {
@@ -113,12 +112,10 @@ public class QAntAPI implements IQAntAPI {
 		return user;
 	}
 
-
 	@Override
 	public void kickUser(QAntUser owner, QAntUser kickedUser, String paramString, int paramInt) {
 
 	}
-
 
 	@Override
 	public void disconnectUser(QAntUser user) {
@@ -160,7 +157,6 @@ public class QAntAPI implements IQAntAPI {
 
 	}
 
-
 	@Override
 	public void disconnect(Channel channel) {
 		if (channel == null) {
@@ -179,37 +175,31 @@ public class QAntAPI implements IQAntAPI {
 
 	}
 
-
 	@Override
 	public QAntUser getUserById(int userId) {
 		return globalUserManager.getUserById(userId);
 	}
-
 
 	@Override
 	public QAntUser getUserByName(String name) {
 		return globalUserManager.getUserByName(name);
 	}
 
-
 	@Override
 	public QAntUser getUserByChannel(Channel channel) {
 		return globalUserManager.getUserByChannel(channel);
 	}
-
 
 	@Override
 	public Room createRoom(Zone zone, CreateRoomSettings roomSetting, QAntUser owner) throws QAntCreateRoomException {
 		return createRoom(zone, roomSetting, owner, false, null, true, true);
 	}
 
-
 	@Override
 	public Room createRoom(Zone zone, CreateRoomSettings roomSetting, QAntUser owner, boolean joinIt, Room roomToLeave)
 			throws QAntCreateRoomException {
 		return createRoom(zone, roomSetting, owner, joinIt, roomToLeave, true, true);
 	}
-
 
 	@Override
 	public Room createRoom(Zone zone, CreateRoomSettings roomSetting, QAntUser owner, boolean joinIt, Room roomToLeave,
@@ -259,12 +249,10 @@ public class QAntAPI implements IQAntAPI {
 		return theRoom;
 	}
 
-
 	@Override
 	public void joinRoom(QAntUser user, Room room) throws QAntJoinRoomException {
 		joinRoom(user, room, "", false, user.getLastJoinedRoom());
 	}
-
 
 	@Override
 	public void joinRoom(QAntUser user, Room roomToJoin, String password, boolean asSpectator, Room roomToLeave)
@@ -272,7 +260,6 @@ public class QAntAPI implements IQAntAPI {
 
 		joinRoom(user, roomToJoin, password, asSpectator, roomToLeave, true, true);
 	}
-
 
 	@Override
 	public void joinRoom(QAntUser user, Room roomToJoin, String password, boolean asSpectator, Room roomToLeave,
@@ -343,12 +330,10 @@ public class QAntAPI implements IQAntAPI {
 		user.setJoining(false);
 	}
 
-
 	@Override
 	public void leaveRoom(QAntUser user, Room room) {
 		leaveRoom(user, room, true, true);
 	}
-
 
 	@Override
 	public void leaveRoom(QAntUser user, Room room, boolean fireClientEvent, boolean fireServerEvent) {
@@ -389,12 +374,10 @@ public class QAntAPI implements IQAntAPI {
 		}
 	}
 
-
 	@Override
 	public void removeRoom(Room room) {
 		removeRoom(room, true, true);
 	}
-
 
 	@Override
 	public void removeRoom(Room room, boolean fireClientEvent, boolean fireServerEvent) {
@@ -414,7 +397,6 @@ public class QAntAPI implements IQAntAPI {
 			qant.getEventManager().dispatchEvent(new QAntEvent(QAntEventType.ROOM_REMOVED, evtParams));
 		}
 	}
-
 
 	@Override
 	public void sendPublicMessage(Room targetRoom, QAntUser sender, String message, IQAntObject param) {
@@ -446,11 +428,9 @@ public class QAntAPI implements IQAntAPI {
 		}
 	}
 
-
 	private List<Channel> getPublicMessageRecipientList(QAntUser sender, Room targetRoom) {
 		return targetRoom.getChannelList();
 	}
-
 
 	@Override
 	public void sendPrivateMessage(QAntUser sender, QAntUser recipient, String message, IQAntObject param) {
@@ -482,7 +462,6 @@ public class QAntAPI implements IQAntAPI {
 		messageRecipients.add(sender.getChannel());
 		sendGenericMessage(GenericMessageType.PRIVATE_MSG, sender, -1, message, param, messageRecipients, null);
 	}
-
 
 	/**
 	 * @param type
@@ -523,7 +502,6 @@ public class QAntAPI implements IQAntAPI {
 		response.write();
 	}
 
-
 	@Override
 	public void sendExtensionResponse(String cmdName, IQAntObject params, List<QAntUser> recipients, Room room) {
 		final List<Channel> channels = new LinkedList<Channel>();
@@ -534,13 +512,22 @@ public class QAntAPI implements IQAntAPI {
 		responseAPI.sendExtResponse(cmdName, params, channels, room);
 	}
 
-
 	@Override
 	public void sendExtensionResponse(String cmdName, IQAntObject params, QAntUser recipient, Room room) {
 		List<Channel> msgRecipients = new LinkedList<Channel>();
 		msgRecipients.add(recipient.getChannel());
 
 		responseAPI.sendExtResponse(cmdName, params, msgRecipients, room);
+	}
+
+	@Override
+	public List<Room> findRooms(Collection<Room> roomList, MatchExpression expression, int limit) {
+		return matcher.matchRooms(roomList, expression, limit);
+	}
+
+	@Override
+	public List<QAntUser> findUsers(Collection<QAntUser> userList, MatchExpression expression, int limit) {
+		return this.matcher.matchUsers(userList, expression, limit);
 	}
 
 }

@@ -1,12 +1,7 @@
 package com.creants.creants_2x.core.entities;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.LoggerFactory;
 
 import com.creants.creants_2x.QAntServer;
 import com.creants.creants_2x.core.exception.QAntCreateRoomException;
@@ -18,15 +13,6 @@ import com.creants.creants_2x.core.managers.IZoneManager;
 import com.creants.creants_2x.core.setting.CreateRoomSettings;
 import com.creants.creants_2x.socket.gate.wood.QAntUser;
 import com.creants.creants_2x.socket.managers.IUserManager;
-import com.smartfoxserver.v2.SmartFoxServer;
-import com.smartfoxserver.v2.entities.SFSRoomEvents;
-import com.smartfoxserver.v2.entities.SFSZone.LoginFinalizer;
-import com.smartfoxserver.v2.entities.managers.SFSRoomManager;
-import com.smartfoxserver.v2.entities.managers.SFSUserManager;
-import com.smartfoxserver.v2.extensions.ISFSExtension;
-import com.smartfoxserver.v2.security.SFSPrivilegeManager;
-import com.smartfoxserver.v2.util.SFSFloodFilter;
-import com.smartfoxserver.v2.util.SFSWordFilter;
 
 import io.netty.channel.Channel;
 
@@ -58,6 +44,12 @@ public class QAntZone implements Zone {
 		this.qant = QAntServer.getInstance();
 		// (this.roomManager = new QAntRoomManager()).setOwnerZone(this);
 		// (this.userManager = new QAntUserManager()).setOwnerZone(this);
+	}
+
+	@Override
+	public List<Room> getRoomListFromGroup(String groupId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
